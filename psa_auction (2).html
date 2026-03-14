@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PSA 3rd Tournament — Auction</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:#00C27A;--green-dark:#00995F;--green-dim:rgba(0,194,122,0.12);
+  --bg:#0D0F0E;--bg2:#141714;--bg3:#1C201C;
+  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
+  --text:#F0F2F0;--muted:#7A8A7D;
+  --danger:#FF5A5A;--danger-dim:rgba(255,90,90,0.1);
+  --gold:#FFB930;--gold-dim:rgba(255,185,48,0.12);
+  --purple:#C084FC;--purple-dim:rgba(192,132,252,0.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+h1,h2{font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.logo{font-family:'Bebas Neue';font-size:22px;color:var(--green);letter-spacing:.08em;}
+.logo span{color:var(--muted);font-size:14px;font-family:'DM Sans';font-weight:400;margin-left:8px;}
+.hdr-btns{display:flex;gap:6px;align-items:center;}
+.content{max-width:960px;margin:0 auto;padding:1.5rem;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
+.card-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem;}
+.stat{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem;}
+.stat-val{font-family:'Bebas Neue';font-size:28px;color:var(--green);letter-spacing:.02em;}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+button{cursor:pointer;font-family:'DM Sans';}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;border:none;transition:all .15s;}
+.btn-primary{background:var(--green);color:#000;}
+.btn-primary:hover{background:var(--green-dark);}
+.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border2);}
+.btn-secondary:hover{background:rgba(255,255,255,0.05);}
+.btn-danger{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,90,90,.25);}
+.btn-warning{background:rgba(255,185,48,0.1);color:var(--gold);border:1px solid rgba(255,185,48,.3);}
+.btn-warning:hover{background:rgba(255,185,48,0.18);}
+.btn-sm{padding:6px 14px;font-size:13px;}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.04em;text-transform:uppercase;}
+.b-gk{background:var(--green-dim);color:var(--green);}
+.b-icon{background:var(--gold-dim);color:var(--gold);}
+.b-gen{background:var(--bg3);color:var(--muted);border:1px solid var(--border);}
+.b-cap{background:var(--purple-dim);color:var(--purple);}
+.b-skip{background:var(--danger-dim);color:var(--danger);}
+.b-auto{background:rgba(91,168,255,0.15);color:#5BA8FF;}
+.tabs{display:flex;gap:4px;background:var(--bg3);border-radius:10px;padding:4px;margin-bottom:1.25rem;}
+.tab{flex:1;padding:8px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;transition:all .15s;}
+.tab.active{background:var(--bg2);color:var(--text);border:1px solid var(--border);}
+.phase-track{display:flex;margin-bottom:1.25rem;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
+.phase-seg{flex:1;padding:10px 8px;text-align:center;font-size:11px;font-weight:500;color:var(--muted);background:var(--bg3);border-right:1px solid var(--border);transition:all .2s;}
+.phase-seg:last-child{border-right:none;}
+.phase-seg.active{background:var(--green-dim);color:var(--green);}
+.phase-seg.done{background:rgba(0,194,122,0.05);color:rgba(0,194,122,0.3);text-decoration:line-through;}
+.phase-seg.reauction-seg{background:var(--danger-dim);color:var(--danger);}
+.chips{display:flex;flex-wrap:wrap;gap:6px;}
+.chip{padding:6px 12px;border-radius:6px;font-size:13px;background:var(--bg3);border:1px solid var(--border);color:var(--text);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+.chip:hover{border-color:var(--border2);}
+.chip.cap-sel{background:var(--purple-dim);border-color:var(--purple);color:var(--purple);}
+.chip.icon-sel{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
+.chip.is-cap-locked{opacity:.4;cursor:not-allowed;pointer-events:none;text-decoration:line-through;}
+.chip-pos{font-size:10px;opacity:.6;}
+.on-block-panel{background:var(--bg2);border:1px solid var(--green);border-radius:12px;padding:1.25rem;margin-bottom:1rem;position:relative;overflow:hidden;}
+.on-block-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);}
+.on-block-panel.danger-block{border-color:var(--danger);}
+.on-block-panel.danger-block::before{background:var(--danger);}
+.on-block-name{font-family:'Bebas Neue';font-size:32px;letter-spacing:.04em;margin:6px 0 4px;}
+.on-block-meta{font-size:13px;color:var(--muted);margin-bottom:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.floor-notice{font-size:13px;padding:8px 12px;border-radius:8px;margin-bottom:10px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted);display:none;}
+.floor-notice.visible{display:block;}
+.floor-notice span{font-weight:600;color:var(--text);}
+.form-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px;}
+.form-lbl{font-size:13px;color:var(--muted);min-width:90px;}
+select,input[type=number],input[type=text]{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:8px 12px;font-size:14px;font-family:'DM Sans';outline:none;transition:border .15s;}
+select:focus,input:focus{border-color:var(--green);}
+select{min-width:200px;}
+input[type=number]{width:100px;}
+input[type=text]{flex:1;}
+.teams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
+.team-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem;}
+.team-card.team-full{border-color:rgba(0,194,122,.3);}
+.team-card.drag-over-team{border-color:var(--gold);background:rgba(255,185,48,0.06);}
+.team-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+.team-name-disp{font-family:'Bebas Neue';font-size:20px;letter-spacing:.04em;}
+.team-coins{font-family:'Bebas Neue';font-size:24px;color:var(--green);}
+.team-coins-lbl{font-size:10px;color:var(--muted);}
+.player-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.player-row:last-child{border-bottom:none;}
+/* EDIT MODE player rows */
+.player-row.draggable{cursor:grab;transition:opacity .15s;}
+.player-row.draggable:active{cursor:grabbing;}
+.player-row.dragging-player{opacity:.3;}
+.player-row.drag-over-player{border-top:2px solid var(--gold);}
+.drag-handle{color:var(--muted);font-size:15px;letter-spacing:-2px;margin-right:4px;flex-shrink:0;}
+.edit-move-btn{font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.edit-move-btn:hover{border-color:var(--gold);color:var(--gold);}
+.log{background:var(--bg3);border-radius:10px;padding:1rem;max-height:400px;overflow-y:auto;}
+.log-entry{font-size:13px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.log-entry:last-child{border-bottom:none;}
+.le-name{color:var(--text);}
+.le-team{color:var(--green);}
+.setup-hero{text-align:center;padding:2.5rem 1.5rem 1.5rem;}
+.setup-hero h1{font-size:52px;color:var(--green);}
+.setup-hero p{color:var(--muted);font-size:15px;margin-top:4px;}
+.team-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.msg{font-size:13px;margin-top:8px;min-height:20px;}
+.msg.err{color:var(--danger);}
+.msg.ok{color:var(--green);}
+.finish-banner{background:var(--green-dim);border:1px solid var(--green);border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1rem;}
+.finish-banner h2{font-size:36px;color:var(--green);}
+.finish-banner p{color:var(--muted);margin-top:4px;}
+.queue-wrap{max-height:180px;overflow-y:auto;}
+.unfilled{font-size:12px;color:var(--danger);margin-top:6px;}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.filter-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans';}
+.filter-btn:hover{color:var(--text);}
+.filter-btn.on{background:var(--bg3);color:var(--text);}
+.sel-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:13px;color:var(--muted);}
+.hint{font-size:12px;color:var(--muted);margin-top:8px;padding:8px 10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);}
+.budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.budget-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1rem;}
+.budget-item-label{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.budget-item input[type=number]{width:100%;}
+.floor-toggle{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.toggle-switch{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-slider{position:absolute;inset:0;background:var(--bg);border:1px solid var(--border2);border-radius:20px;cursor:pointer;transition:.2s;}
+.toggle-slider:before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:.2s;}
+input:checked~.toggle-slider{background:var(--green-dim);border-color:var(--green);}
+input:checked~.toggle-slider:before{background:var(--green);transform:translateX(16px);}
+.toggle-lbl{font-size:12px;color:var(--muted);}
+.phase-order-list{display:flex;flex-direction:column;gap:8px;}
+.poi{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;cursor:grab;user-select:none;transition:border-color .15s,opacity .15s;}
+.poi:active{cursor:grabbing;}
+.poi.dragging{opacity:.35;border-style:dashed;}
+.poi.drag-over{border-color:var(--green);background:var(--green-dim);}
+.poi-handle{color:var(--muted);font-size:18px;line-height:1;letter-spacing:-3px;}
+.poi-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.poi-icon.gk{background:var(--green-dim);}
+.poi-icon.icon{background:var(--gold-dim);}
+.poi-icon.gen{background:rgba(255,255,255,0.04);border:1px solid var(--border);}
+.poi-info{flex:1;}
+.poi-name{font-weight:500;font-size:14px;}
+.poi-desc{font-size:12px;color:var(--muted);margin-top:2px;}
+.poi-num{font-family:'Bebas Neue';font-size:24px;color:var(--muted);width:28px;text-align:right;}
+.cap-assign-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
+.cap-slot{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;}
+.cap-slot-team{font-family:'Bebas Neue';font-size:18px;letter-spacing:.04em;margin-bottom:8px;}
+.cap-slot select{width:100%;}
+.cap-hero{text-align:center;padding:2rem 1.5rem 1.5rem;}
+.cap-hero h1{font-size:44px;color:var(--purple);}
+.cap-hero p{color:var(--muted);font-size:14px;margin-top:4px;}
+.skipped-info{background:var(--danger-dim);border:1px solid rgba(255,90,90,.25);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--danger);margin-bottom:10px;display:none;}
+.distribute-panel{background:var(--bg2);border:1px solid var(--danger);border-radius:12px;padding:1.25rem;margin-bottom:1rem;position:relative;overflow:hidden;}
+.distribute-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--danger);}
+.auto-banner{background:rgba(91,168,255,0.08);border:1px solid rgba(91,168,255,0.3);border-radius:12px;padding:1.25rem;margin-bottom:1rem;text-align:center;}
+.auto-banner h2{font-family:'Bebas Neue';font-size:28px;color:#5BA8FF;letter-spacing:.04em;}
+.auto-banner p{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.6;}
+/* UNDO BAR */
+.undo-bar{background:rgba(255,185,48,0.08);border:1px solid rgba(255,185,48,.2);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--muted);margin-bottom:10px;display:none;align-items:center;justify-content:space-between;gap:10px;}
+.undo-bar.visible{display:flex;}
+.undo-bar-text{flex:1;}
+.undo-bar-text strong{color:var(--gold);}
+/* EDIT MODE */
+.edit-mode-banner{background:rgba(255,185,48,0.08);border:1px solid rgba(255,185,48,.3);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.edit-mode-banner p{font-size:13px;color:var(--muted);margin-top:2px;}
+.edit-mode-banner strong{color:var(--gold);}
+.edit-save-warn{font-size:13px;color:var(--danger);margin-top:4px;}
+.buffer-card{background:var(--bg2);border:2px dashed rgba(255,185,48,.35);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
+.buffer-card.drag-over-team{background:rgba(255,185,48,0.07);border-color:var(--gold);}
+.buffer-empty{font-size:13px;color:var(--muted);padding:8px 0;}
+.buffer-player{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;cursor:grab;}
+.buffer-player:last-child{border-bottom:none;}
+.buffer-player.dragging-player{opacity:.3;}
+.add-player-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.add-player-row input{flex:1;min-width:120px;}
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:1.5rem;min-width:300px;max-width:420px;width:90%;}
+.modal h3{font-family:'Bebas Neue';font-size:24px;letter-spacing:.04em;margin-bottom:4px;}
+.modal p{font-size:13px;color:var(--muted);margin-bottom:12px;}
+.modal select{width:100%;margin-bottom:10px;}
+.modal .btn-row{margin-top:0;}
+@media(max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .team-inputs,.budget-grid,.cap-assign-grid{grid-template-columns:1fr;}
+  .on-block-name{font-size:24px;}
+}
+</style>
+</head>
+<body>
+
+<!-- SCREEN 1: SETUP -->
+<div id="screen-setup" class="screen active">
+  <header><div class="logo">PSA <span>3rd Tournament</span></div></header>
+  <div class="content">
+    <div class="setup-hero"><h1>AUCTION</h1><p>Configure teams, budget, floors, captains and icons.</p></div>
+    <div class="card">
+      <div class="card-title">Team names</div>
+      <div class="team-inputs" id="team-inputs"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Budget &amp; minimum floors</div>
+      <div class="budget-grid">
+        <div class="budget-item">
+          <div class="budget-item-label">Starting coins per team</div>
+          <input type="number" id="budget-input" value="100" min="20" max="999" step="10">
+        </div>
+        <div class="budget-item">
+          <div class="budget-item-label"><span class="badge b-gk">GK</span> Goalkeeper floor</div>
+          <div class="floor-toggle"><label class="toggle-switch"><input type="checkbox" id="gk-floor-on" checked><span class="toggle-slider"></span></label><span class="toggle-lbl" id="gk-floor-lbl">Enabled</span></div>
+          <input type="number" id="gk-floor" value="5" min="1" max="99">
+        </div>
+        <div class="budget-item">
+          <div class="budget-item-label"><span class="badge b-icon">ICON</span> Icon player floor</div>
+          <div class="floor-toggle"><label class="toggle-switch"><input type="checkbox" id="icon-floor-on" checked><span class="toggle-slider"></span></label><span class="toggle-lbl" id="icon-floor-lbl">Enabled</span></div>
+          <input type="number" id="icon-floor" value="8" min="1" max="99">
+        </div>
+        <div class="budget-item">
+          <div class="budget-item-label"><span class="badge b-gen">GEN</span> General player floor</div>
+          <div class="floor-toggle"><label class="toggle-switch"><input type="checkbox" id="gen-floor-on"><span class="toggle-slider"></span></label><span class="toggle-lbl" id="gen-floor-lbl">Disabled</span></div>
+          <input type="number" id="gen-floor" value="1" min="1" max="99" disabled style="opacity:.4;">
+        </div>
+      </div>
+      <div class="hint">Floors apply only during live bidding. Re-auction and distribute have no floors. The last GK auto-assigns at the GK floor price.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Captains &nbsp;<span style="font-weight:400;font-size:11px;">select exactly 6 — GKs allowed · pre-assigned free</span></div>
+      <div class="chips" id="cap-sel"></div>
+      <div class="sel-footer">
+        <div><span id="cap-count" style="color:var(--purple);font-weight:500;">0</span> / 6 selected</div>
+        <button class="btn btn-secondary btn-sm" onclick="clearCaps()">Clear</button>
+      </div>
+      <div class="hint" style="margin-top:10px;">GK captains are pre-assigned as both captain and keeper — their team skips the GK auction.</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Icon players &nbsp;<span style="font-weight:400;font-size:11px;">captains are excluded automatically</span></div>
+      <div class="filter-row">
+        <button class="filter-btn on" data-f="all" onclick="filterIcons('all',this)">All outfield</button>
+        <button class="filter-btn" data-f="Forward" onclick="filterIcons('Forward',this)">Forwards</button>
+        <button class="filter-btn" data-f="Mid" onclick="filterIcons('Mid',this)">Midfielders</button>
+        <button class="filter-btn" data-f="Def" onclick="filterIcons('Def',this)">Defenders</button>
+      </div>
+      <div class="chips" id="icon-sel"></div>
+      <div class="sel-footer">
+        <div><span id="icon-count" style="color:var(--gold);font-weight:500;">0</span> icons selected</div>
+        <button class="btn btn-secondary btn-sm" onclick="clearIcons()">Clear all</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Goalkeepers &nbsp;<span style="font-weight:400;font-size:11px;">6 players · one per team · last GK auto-assigns</span></div>
+      <div class="chips" id="gk-chips"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Phase order &nbsp;<span style="font-weight:400;font-size:11px;">drag to reorder</span></div>
+      <div class="phase-order-list" id="phase-order-list"></div>
+    </div>
+    <div id="setup-warn" class="msg err"></div>
+    <div class="btn-row" style="justify-content:flex-end;margin-top:1rem;">
+      <button class="btn btn-primary" onclick="goToCaptains()" style="font-size:16px;padding:12px 32px;">Next: Assign captains &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 2: CAPTAIN ASSIGNMENT -->
+<div id="screen-captains" class="screen">
+  <header>
+    <div class="logo">PSA <span>Captains</span></div>
+    <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-setup')">&#8592; Back</button>
+  </header>
+  <div class="content">
+    <div class="cap-hero"><h1>ASSIGN CAPTAINS</h1><p>Pick one captain per team. GK captains count as both keeper and captain.</p></div>
+    <div class="cap-assign-grid" id="cap-assign-grid"></div>
+    <div id="cap-assign-warn" class="msg err"></div>
+    <div class="btn-row" style="justify-content:flex-end;margin-top:1rem;">
+      <button class="btn btn-primary" onclick="startAuction()" style="font-size:16px;padding:12px 32px;">Start auction &rarr;</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCREEN 3: AUCTION -->
+<div id="screen-auction" class="screen">
+  <header>
+    <div class="logo">PSA <span>Auction</span></div>
+    <div class="hdr-btns">
+      <button class="btn btn-warning btn-sm" id="undo-hdr-btn" style="display:none;" onclick="undoLast()">&#8617; Undo</button>
+      <button class="btn btn-secondary btn-sm" onclick="goSetup()">&#8592; Setup</button>
+    </div>
+  </header>
+  <div class="content">
+    <div class="tabs">
+      <button class="tab active" onclick="showTab('tab-live',this)">Live auction</button>
+      <button class="tab" onclick="showTab('tab-squads',this)">Squads</button>
+      <button class="tab" onclick="showTab('tab-log',this)">Log</button>
+    </div>
+
+    <div id="tab-live">
+      <div class="phase-track" id="phase-track"></div>
+      <div class="stats">
+        <div class="stat"><div class="stat-val" id="s-queue">—</div><div class="stat-lbl">In queue</div></div>
+        <div class="stat"><div class="stat-val" id="s-sold">0</div><div class="stat-lbl">Sold</div></div>
+        <div class="stat"><div class="stat-val" id="s-phase">—</div><div class="stat-lbl">Phase</div></div>
+        <div class="stat"><div class="stat-val" id="s-skipped">0</div><div class="stat-lbl">Skipped</div></div>
+      </div>
+      <div class="undo-bar" id="undo-bar">
+        <div class="undo-bar-text" id="undo-bar-text"></div>
+        <button class="btn btn-warning btn-sm" onclick="undoLast()">&#8617; Undo</button>
+      </div>
+      <div id="skipped-info" class="skipped-info"></div>
+
+      <div id="active-panel">
+        <div class="floor-notice" id="floor-notice"></div>
+        <div class="on-block-panel" id="ob-panel">
+          <div class="card-title" id="ob-label">On the block</div>
+          <div class="on-block-name" id="ob-name">—</div>
+          <div class="on-block-meta" id="ob-meta"></div>
+          <div class="form-row">
+            <span class="form-lbl">Winning team</span>
+            <select id="bid-team"></select>
+          </div>
+          <div class="form-row">
+            <span class="form-lbl">Bid (coins)</span>
+            <input type="number" id="bid-coins" value="1" min="1">
+          </div>
+          <div class="msg" id="bid-msg"></div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="confirmBid()">Confirm sale</button>
+            <button class="btn btn-secondary" onclick="skipPlayer()">Skip / unsold</button>
+            <button class="btn btn-secondary" id="next-phase-btn" style="display:none;" onclick="advancePhase()">Next phase &rarr;</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Remaining in queue</div>
+          <div class="chips queue-wrap" id="queue-chips"></div>
+        </div>
+      </div>
+
+      <div id="auto-panel" style="display:none;">
+        <div class="auto-banner">
+          <h2>AUTO-ASSIGN</h2>
+          <p id="auto-text"></p>
+        </div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-primary" onclick="confirmAutoAssign()">Confirm auto-assign</button>
+        </div>
+      </div>
+
+      <div id="distribute-panel" style="display:none;">
+        <div class="distribute-panel">
+          <div class="card-title">Distribute to unfilled teams</div>
+          <div class="on-block-name" id="dist-name">—</div>
+          <div class="on-block-meta" id="dist-meta"></div>
+          <div class="form-row"><span class="form-lbl">Assign to</span><select id="dist-team"></select></div>
+          <div class="msg" id="dist-msg"></div>
+          <div class="btn-row">
+            <button class="btn btn-danger" onclick="distributePlayer()">Assign (free)</button>
+            <button class="btn btn-secondary" onclick="skipDistribute()">Skip this player</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Still to distribute</div>
+          <div class="chips queue-wrap" id="dist-queue-chips"></div>
+        </div>
+      </div>
+
+      <div id="finish-panel" style="display:none;">
+        <div class="finish-banner">
+          <h2>AUCTION COMPLETE</h2>
+          <p>All players sold or distributed.</p>
+        </div>
+        <div class="btn-row" style="justify-content:center;">
+          <button class="btn btn-warning" onclick="enterEditMode()">Edit squads &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-squads" style="display:none;">
+      <div id="edit-mode-banner" style="display:none;">
+        <div class="edit-mode-banner">
+          <div>
+            <strong>Edit mode</strong>
+            <p>Remove players to the buffer, drag from buffer to a team, or add new players. Save locks until all teams have 7.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div id="edit-save-warn" class="edit-save-warn" style="display:none;align-self:center;"></div>
+            <button class="btn btn-primary btn-sm" id="save-edit-btn" onclick="saveEdit()">Save changes</button>
+            <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">Cancel</button>
+          </div>
+        </div>
+        <!-- BUFFER -->
+        <div class="buffer-card" id="buffer-card" ondragover="bufferDragOver(event)" ondragleave="bufferDragLeave(event)" ondrop="bufferDrop(event)">
+          <div class="card-title" style="margin-bottom:8px;">Buffer — removed or new players</div>
+          <div id="buffer-list"><div class="buffer-empty">No players in buffer. Remove a player from a team to add them here.</div></div>
+          <div class="add-player-row">
+            <input type="text" id="new-player-name" placeholder="Add new player name">
+            <input type="text" id="new-player-pos" placeholder="Position" style="max-width:130px;">
+            <button class="btn btn-secondary btn-sm" onclick="addNewPlayerToBuffer()">+ Add</button>
+          </div>
+        </div>
+      </div>
+      <div class="teams-grid" id="squads-grid"></div>
+    </div>
+
+    <div id="tab-log" style="display:none;">
+      <div class="card"><div class="card-title">Auction log</div><div class="log" id="full-log"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ASSIGN FROM BUFFER MODAL -->
+<div class="modal-bg" id="assign-modal-bg" onclick="closeAssignModal(event)">
+  <div class="modal">
+    <h3>Assign to team</h3>
+    <p id="assign-modal-player"></p>
+    <select id="assign-modal-team"></select>
+    <div class="msg err" id="assign-modal-err"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="confirmAssignFromBuffer()">Assign</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('assign-modal-bg').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALL_PLAYERS = [
+  {id:1,name:"Arun Kumar S",pos:"Defender",isGK:false},
+  {id:2,name:"Afishek SR",pos:"Defender",isGK:false},
+  {id:3,name:"Gautham G Ajith",pos:"Mid / Fwd",isGK:false},
+  {id:4,name:"Jithin Satheesh",pos:"Mid / Fwd",isGK:false},
+  {id:5,name:"Pranav S",pos:"Mid / Fwd",isGK:false},
+  {id:6,name:"Ashok Mathew",pos:"Forward",isGK:false},
+  {id:7,name:"Aswanth ER",pos:"Defender",isGK:false},
+  {id:8,name:"Jerry Abraham",pos:"Def / Fwd",isGK:false},
+  {id:9,name:"Niju",pos:"GK",isGK:true},
+  {id:10,name:"Sai Shubham",pos:"Def / Mid",isGK:false},
+  {id:11,name:"Abdhul Rahuman",pos:"Forward",isGK:false},
+  {id:12,name:"Abhishek Nair",pos:"GK",isGK:true},
+  {id:13,name:"Neeraj",pos:"Defender",isGK:false},
+  {id:14,name:"Harisankar",pos:"Midfielder",isGK:false},
+  {id:15,name:"Anush S",pos:"Forward",isGK:false},
+  {id:16,name:"Devadath Unni",pos:"Defender",isGK:false},
+  {id:17,name:"Mithun R",pos:"Def / Mid / Fwd",isGK:false},
+  {id:18,name:"Alan Joseph J",pos:"GK",isGK:true},
+  {id:19,name:"Hari Krishnan AK",pos:"Mid / Fwd",isGK:false},
+  {id:20,name:"Manoj O J",pos:"Forward",isGK:false},
+  {id:21,name:"Jithu Mohan",pos:"Def / Mid / Fwd",isGK:false},
+  {id:22,name:"Abdul Rauf",pos:"GK",isGK:true},
+  {id:23,name:"Ephream Jude George",pos:"Def / Mid / Fwd",isGK:false},
+  {id:24,name:"Sidharth VS",pos:"Forward",isGK:false},
+  {id:25,name:"Sooraj R",pos:"Forward",isGK:false},
+  {id:26,name:"Jesil M N",pos:"Def / Mid / Fwd",isGK:false},
+  {id:27,name:"Asif Nasser",pos:"Mid / Fwd",isGK:false},
+  {id:28,name:"Kahlil M",pos:"Forward",isGK:false},
+  {id:29,name:"Sharuk Hussain",pos:"Forward",isGK:false},
+  {id:30,name:"Madhav",pos:"Forward",isGK:false},
+  {id:31,name:"Vyshakh Sajeev",pos:"Forward",isGK:false},
+  {id:32,name:"Sam Stephen",pos:"Def / Mid",isGK:false},
+  {id:33,name:"Sreedev P R",pos:"Defender",isGK:false},
+  {id:34,name:"Jayakrishnan M",pos:"Defender",isGK:false},
+  {id:35,name:"Luai Aslam",pos:"Defender",isGK:false},
+  {id:36,name:"Nithin Prasad",pos:"GK",isGK:true},
+  {id:37,name:"Paul",pos:"Defender",isGK:false},
+  {id:38,name:"Akhil Nair",pos:"Mid / Fwd",isGK:false},
+  {id:39,name:"Jayadevan D",pos:"GK",isGK:true},
+  {id:40,name:"Harilal Vishnu S",pos:"Defender",isGK:false},
+  {id:41,name:"Leroy Jeslyn",pos:"Midfielder",isGK:false},
+  {id:42,name:"Jackson John",pos:"Defender",isGK:false},
+];
+
+const SQUAD_SIZE = 7;
+const PHASE_META = {
+  gk:      {label:'GKs',    cls:'gk',   emoji:'🧤', desc:'One GK per team · GK captains skip this phase.'},
+  icon:    {label:'Icons',  cls:'icon', emoji:'⭐', desc:'Marquee players · captains excluded.'},
+  general: {label:'General',cls:'gen',  emoji:'⚽', desc:'All remaining outfield players.'},
+};
+
+let capIds = new Set();
+let iconIds = new Set();
+let phaseOrder = ['gk','icon','general'];
+let floors = {gk:5,icon:8,gen:1,gkOn:true,iconOn:true,genOn:false};
+let editMode = false;
+
+// Undo stack — each entry is a deep snapshot of S.teams + the action description
+let undoStack = [];
+
+let S = {
+  teams:[],budget:100,phases:[],phaseIdx:0,
+  queue:[],skippedPool:[],distQueue:[],
+  current:null,pendingAutoAssign:null,
+  log:[],sold:0,skipped:0,
+  inReauction:false,inDistribute:false,
+  soldIds:new Set()
+};
+
+// ===== SNAPSHOT / UNDO =====
+function snapshot(desc){
+  // Include current player at the front of the queue so undo fully restores the state
+  // before this action — current player goes back on the block
+  const queueWithCurrent = S.current ? [S.current, ...S.queue] : [...S.queue];
+  undoStack.push({
+    desc,
+    teams: JSON.parse(JSON.stringify(S.teams)),
+    queue: JSON.parse(JSON.stringify(queueWithCurrent)),
+    phaseIdx: S.phaseIdx,
+    sold: S.sold,
+    skipped: S.skipped,
+    skippedPool: JSON.parse(JSON.stringify(S.skippedPool)),
+    log: [...S.log],
+    inReauction: S.inReauction,
+    soldIds: new Set(S.soldIds)
+  });
+  updateUndoUI();
+}
+
+function undoLast(){
+  if(!undoStack.length) return;
+  const prev = undoStack.pop();
+  S.teams = prev.teams;
+  S.queue = prev.queue;
+  S.phaseIdx = prev.phaseIdx;
+  S.sold = prev.sold;
+  S.skipped = prev.skipped;
+  S.skippedPool = prev.skippedPool;
+  S.log = prev.log;
+  S.inReauction = prev.inReauction;
+  S.soldIds = prev.soldIds;
+  // Pull the next player from the restored queue to put back on the block
+  S.current = S.queue.shift() || null;
+  updateTrack(); renderStats();
+  document.getElementById('active-panel').style.display = 'block';
+  ['auto-panel','distribute-panel','finish-panel'].forEach(id=>document.getElementById(id).style.display='none');
+  if(S.current){
+    document.getElementById('ob-name').textContent = S.current.name;
+    const ph = S.phases[S.phaseIdx];
+    const lbl = S.inReauction?'Re-auction':ph==='gk'?'Goalkeeper':ph==='icon'?'Icon player':'General';
+    const bc = S.inReauction?'b-skip':ph==='gk'?'b-gk':ph==='icon'?'b-icon':'b-gen';
+    document.getElementById('ob-meta').innerHTML=`<span class="badge ${bc}">${lbl}</span><span>${S.current.pos}</span>`;
+    document.getElementById('ob-panel').className='on-block-panel'+(S.inReauction?' danger-block':'');
+    document.getElementById('ob-label').textContent = S.inReauction?'Re-auction':'On the block';
+    document.getElementById('floor-notice').classList.remove('visible');
+    const floor = currentFloor(ph);
+    const floorOn = !S.inReauction&&((ph==='gk'&&floors.gkOn)||(ph==='icon'&&floors.iconOn)||((ph==='general'||ph==='gen')&&floors.genOn));
+    if(floorOn&&floor>1){ const fn=document.getElementById('floor-notice'); fn.innerHTML=`Minimum bid: <span>${floor} coins</span>`; fn.classList.add('visible'); }
+    document.getElementById('bid-coins').value = Math.max(1, floor);
+    renderTeamSel(); renderQueueChips();
+  }
+  document.getElementById('bid-msg').className='msg';
+  document.getElementById('bid-msg').textContent='';
+  document.getElementById('next-phase-btn').style.display='none';
+  updateUndoUI();
+}
+
+function updateUndoUI(){
+  const hasUndo = undoStack.length > 0;
+  const bar = document.getElementById('undo-bar');
+  const hdrBtn = document.getElementById('undo-hdr-btn');
+  if(hasUndo){
+    const last = undoStack[undoStack.length-1];
+    bar.classList.add('visible');
+    document.getElementById('undo-bar-text').innerHTML = `Last action: <strong>${last.desc}</strong>`;
+    hdrBtn.style.display='inline-flex';
+  } else {
+    bar.classList.remove('visible');
+    hdrBtn.style.display='none';
+  }
+}
+
+// ===== SETUP =====
+function initSetup(){
+  document.getElementById('team-inputs').innerHTML =
+    [1,2,3,4,5,6].map(i=>`<input type="text" id="tn-${i}" value="Team ${i}" placeholder="Team ${i}">`).join('');
+  ['gk','icon','gen'].forEach(t=>{
+    document.getElementById(t+'-floor-on').addEventListener('change',function(){
+      const inp=document.getElementById(t+'-floor');
+      inp.disabled=!this.checked;inp.style.opacity=this.checked?'1':'.4';
+      document.getElementById(t+'-floor-lbl').textContent=this.checked?'Enabled':'Disabled';
+    });
+  });
+  renderCapSel(); renderIconSel('all');
+  document.getElementById('gk-chips').innerHTML = ALL_PLAYERS.filter(p=>p.isGK).map(p=>`
+    <div class="chip ${capIds.has(p.id)?'cap-sel':''}" id="gk-chip-${p.id}" onclick="toggleCap(${p.id},true)">
+      <span class="badge b-gk">GK</span>${p.name}
+    </div>`).join('');
+  renderPhaseList();
+}
+
+function renderCapSel(){
+  document.getElementById('cap-sel').innerHTML = ALL_PLAYERS.filter(p=>!p.isGK).map(p=>`
+    <div class="chip ${capIds.has(p.id)?'cap-sel':''}" id="cp-${p.id}" onclick="toggleCap(${p.id},false)">
+      ${p.name}<span class="chip-pos">${p.pos}</span>
+    </div>`).join('');
+  ALL_PLAYERS.filter(p=>p.isGK).forEach(p=>{
+    const el=document.getElementById('gk-chip-'+p.id);
+    if(el) el.className=`chip ${capIds.has(p.id)?'cap-sel':''}`;
+  });
+  document.getElementById('cap-count').textContent=capIds.size;
+}
+
+function toggleCap(id){
+  if(capIds.has(id)){ capIds.delete(id); if(iconIds.has(id)){iconIds.delete(id);} }
+  else { if(capIds.size>=6){alert('Only 6 captains — one per team.');return;} capIds.add(id); }
+  renderCapSel();
+  const af=document.querySelector('.filter-btn.on');
+  renderIconSel(af?af.dataset.f:'all');
+}
+function clearCaps(){ capIds.clear(); renderCapSel(); const af=document.querySelector('.filter-btn.on'); renderIconSel(af?af.dataset.f:'all'); }
+
+function renderIconSel(f){
+  const all=ALL_PLAYERS.filter(p=>!p.isGK);
+  const filtered=f==='all'?all:all.filter(p=>p.pos.includes(f));
+  filtered.forEach(p=>{ if(capIds.has(p.id)&&iconIds.has(p.id)) iconIds.delete(p.id); });
+  document.getElementById('icon-sel').innerHTML=filtered.map(p=>{
+    const isCap=capIds.has(p.id), isIcon=iconIds.has(p.id)&&!isCap;
+    return `<div class="chip ${isIcon?'icon-sel':''} ${isCap?'is-cap-locked':''}" id="ic-${p.id}" onclick="toggleIcon(${p.id})" title="${isCap?'Captain — cannot be icon':''}">
+      ${p.name}${isCap?'<span class="badge b-cap" style="margin-left:2px;">C</span>':''}
+      <span class="chip-pos">${p.pos}</span>
+    </div>`;
+  }).join('');
+  document.getElementById('icon-count').textContent=iconIds.size;
+}
+
+function filterIcons(f,btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');btn.dataset.f=f;renderIconSel(f);
+}
+function toggleIcon(id){ if(capIds.has(id))return; iconIds.has(id)?iconIds.delete(id):iconIds.add(id); document.getElementById('ic-'+id)?.classList.toggle('icon-sel',iconIds.has(id)); document.getElementById('icon-count').textContent=iconIds.size; }
+function clearIcons(){ iconIds.clear(); const af=document.querySelector('.filter-btn.on'); renderIconSel(af?af.dataset.f:'all'); }
+
+function renderPhaseList(){
+  document.getElementById('phase-order-list').innerHTML=phaseOrder.map((ph,i)=>{
+    const m=PHASE_META[ph];
+    return `<div class="poi" draggable="true" data-ph="${ph}" ondragstart="ds(event)" ondragover="dov(event)" ondrop="ddr(event)" ondragleave="dlv(event)">
+      <span class="poi-handle">⋮⋮</span>
+      <div class="poi-icon ${m.cls}">${m.emoji}</div>
+      <div class="poi-info"><div class="poi-name">${m.label}</div><div class="poi-desc">${m.desc}</div></div>
+      <div class="poi-num">${i+1}</div>
+    </div>`;
+  }).join('');
+}
+let _drag=null;
+function ds(e){_drag=e.currentTarget;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function dov(e){e.preventDefault();if(e.currentTarget!==_drag)e.currentTarget.classList.add('drag-over');}
+function dlv(e){e.currentTarget.classList.remove('drag-over');}
+function ddr(e){
+  e.preventDefault();e.currentTarget.classList.remove('drag-over');
+  if(!_drag||_drag===e.currentTarget)return;
+  const fi=phaseOrder.indexOf(_drag.dataset.ph),ti=phaseOrder.indexOf(e.currentTarget.dataset.ph);
+  phaseOrder.splice(fi,1);phaseOrder.splice(ti,0,_drag.dataset.ph);
+  _drag.classList.remove('dragging');_drag=null;renderPhaseList();
+}
+
+function getFloors(){
+  return {
+    gk:   document.getElementById('gk-floor-on').checked   ?(parseInt(document.getElementById('gk-floor').value)||1):1,
+    icon: document.getElementById('icon-floor-on').checked  ?(parseInt(document.getElementById('icon-floor').value)||1):1,
+    gen:  document.getElementById('gen-floor-on').checked   ?(parseInt(document.getElementById('gen-floor').value)||1):1,
+    gkOn: document.getElementById('gk-floor-on').checked,
+    iconOn:document.getElementById('icon-floor-on').checked,
+    genOn: document.getElementById('gen-floor-on').checked,
+  };
+}
+
+function goToCaptains(){
+  const warn=document.getElementById('setup-warn');
+  if(capIds.size!==6){warn.textContent='Please select exactly 6 captains before continuing.';return;}
+  warn.textContent='';
+  const caps=ALL_PLAYERS.filter(p=>capIds.has(p.id));
+  const teams=Array.from({length:6},(_,i)=>document.getElementById('tn-'+(i+1)).value.trim()||`Team ${i+1}`);
+  document.getElementById('cap-assign-grid').innerHTML=teams.map((t,i)=>`
+    <div class="cap-slot">
+      <div class="cap-slot-team">${t}</div>
+      <select id="ca-${i}">
+        <option value="">— choose captain —</option>
+        ${caps.map(c=>`<option value="${c.id}">${c.name}${c.isGK?' (GK)':''} · ${c.pos}</option>`).join('')}
+      </select>
+    </div>`).join('');
+  showScreen('screen-captains');
+}
+
+// ===== CAPTAIN SCREEN =====
+function startAuction(){
+  const assigned=[];
+  for(let i=0;i<6;i++){
+    const v=document.getElementById('ca-'+i)?.value;
+    if(!v){document.getElementById('cap-assign-warn').textContent='Assign a captain to every team.';return;}
+    if(assigned.includes(v)){document.getElementById('cap-assign-warn').textContent='Each captain can only be on one team.';return;}
+    assigned.push(v);
+  }
+  document.getElementById('cap-assign-warn').textContent='';
+  floors=getFloors();
+  S.budget=parseInt(document.getElementById('budget-input').value)||100;
+  S.teams=Array.from({length:6},(_,i)=>{
+    const capId=parseInt(document.getElementById('ca-'+i).value);
+    const cap=ALL_PLAYERS.find(p=>p.id===capId);
+    return {
+      name:document.getElementById('tn-'+(i+1)).value.trim()||`Team ${i+1}`,
+      budget:S.budget,
+      players:[{name:cap.name,pos:cap.pos,type:cap.isGK?'gk-cap':'cap',price:0,isCap:true,isGK:cap.isGK,id:cap.id}],
+      hasGK:cap.isGK, capId
+    };
+  });
+  S.log=[];S.sold=0;S.skipped=0;S.phaseIdx=0;S.current=null;S.pendingAutoAssign=null;S.soldIds=new Set();
+  S.skippedPool=[];S.inReauction=false;S.inDistribute=false;
+  undoStack=[];
+  const gkCapCount=S.teams.filter(t=>t.hasGK).length;
+  S.phases=phaseOrder.filter(ph=>{
+    if(ph==='icon'&&iconIds.size===0)return false;
+    if(ph==='gk'&&gkCapCount===6)return false;
+    return true;
+  });
+  loadQueue();
+  showScreen('screen-auction');
+  ['finish-panel','auto-panel','distribute-panel'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('active-panel').style.display='block';
+  document.getElementById('skipped-info').style.display='none';
+  document.getElementById('undo-bar').classList.remove('visible');
+  document.getElementById('undo-hdr-btn').style.display='none';
+  updateTrack();renderStats();nextPlayer();
+}
+
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function goSetup(){if(S.sold>0&&!confirm('Go back to setup? Progress will be lost.'))return;showScreen('screen-setup');}
+
+// ===== AUCTION CORE =====
+function loadQueue(){
+  const ph=S.phases[S.phaseIdx];
+  const exclude = id => capIds.has(id) || S.soldIds.has(id);
+  if(ph==='gk') S.queue=ALL_PLAYERS.filter(p=>p.isGK&&!exclude(p.id));
+  else if(ph==='icon') S.queue=ALL_PLAYERS.filter(p=>!p.isGK&&iconIds.has(p.id)&&!exclude(p.id));
+  else S.queue=ALL_PLAYERS.filter(p=>!p.isGK&&!iconIds.has(p.id)&&!exclude(p.id));
+}
+
+function currentFloor(ph){
+  if(S.inReauction)return 1;
+  if(ph==='gk')return floors.gkOn?floors.gk:1;
+  if(ph==='icon')return floors.iconOn?floors.icon:1;
+  return floors.genOn?floors.gen:1;
+}
+
+function teamsNeedingGK(){return S.teams.filter(t=>!t.hasGK);}
+
+function updateTrack(){
+  const segs=S.phases.map((ph,i)=>{
+    const cur=!S.inReauction&&i===S.phaseIdx,done=i<S.phaseIdx&&!S.inReauction;
+    return `<div class="phase-seg ${cur?'active':''} ${done?'done':''}">${i+1}. ${PHASE_META[ph].label}</div>`;
+  });
+  if(S.inReauction) segs.push(`<div class="phase-seg reauction-seg">Re-auction</div>`);
+  else if(S.skippedPool.length>0) segs.push(`<div class="phase-seg">Re-auction</div>`);
+  document.getElementById('phase-track').innerHTML=segs.join('');
+  document.getElementById('s-phase').textContent=S.inReauction?'Re-auction':PHASE_META[S.phases[S.phaseIdx]]?.label||'—';
+}
+
+function renderStats(){
+  document.getElementById('s-queue').textContent=S.queue.length;
+  document.getElementById('s-sold').textContent=S.sold;
+  document.getElementById('s-skipped').textContent=S.skippedPool.length;
+  const si=document.getElementById('skipped-info');
+  if(S.skippedPool.length>0&&!S.inReauction){si.style.display='block';si.textContent=`${S.skippedPool.length} skipped player${S.skippedPool.length>1?'s':''} will be re-auctioned at the end.`;}
+  else si.style.display='none';
+}
+
+function nextPlayer(){
+  document.getElementById('next-phase-btn').style.display='none';
+  document.getElementById('bid-msg').className='msg';document.getElementById('bid-msg').textContent='';
+  document.getElementById('ob-panel').className='on-block-panel';
+  document.getElementById('ob-label').textContent='On the block';
+  document.getElementById('floor-notice').classList.remove('visible');
+  document.getElementById('auto-panel').style.display='none';
+  document.getElementById('active-panel').style.display='block';
+
+  if(!S.queue.length){
+    if(!S.inReauction&&S.phaseIdx<S.phases.length-1){offerNext();return;}
+    if(!S.inReauction){startReauction();return;}
+    startDistribute();return;
+  }
+
+  const ph=S.phases[S.phaseIdx];
+  if(ph==='gk'&&!S.inReauction){
+    const needGK=teamsNeedingGK();
+    if(needGK.length===1&&S.queue.length===1){
+      S.current=S.queue.shift();
+      S.pendingAutoAssign={player:S.current,team:needGK[0]};
+      showAutoAssign();return;
+    }
+  }
+
+  S.current=S.queue.shift();
+  document.getElementById('ob-name').textContent=S.current.name;
+  const lbl=S.inReauction?'Re-auction':ph==='gk'?'Goalkeeper':ph==='icon'?'Icon player':'General';
+  const bc=S.inReauction?'b-skip':ph==='gk'?'b-gk':ph==='icon'?'b-icon':'b-gen';
+  document.getElementById('ob-meta').innerHTML=`<span class="badge ${bc}">${lbl}</span><span>${S.current.pos}</span>`;
+  if(S.inReauction) document.getElementById('ob-panel').classList.add('danger-block');
+  const floor=currentFloor(ph);
+  const floorOn=!S.inReauction&&((ph==='gk'&&floors.gkOn)||(ph==='icon'&&floors.iconOn)||((ph==='general'||ph==='gen')&&floors.genOn));
+  if(floorOn&&floor>1){const fn=document.getElementById('floor-notice');fn.innerHTML=`Minimum bid: <span>${floor} coins</span>`;fn.classList.add('visible');}
+  document.getElementById('bid-coins').value=Math.max(1,currentFloor(ph));
+  renderTeamSel();renderQueueChips();renderStats();
+}
+
+function showAutoAssign(){
+  const {player,team}=S.pendingAutoAssign;
+  const price=floors.gkOn?floors.gk:1;
+  document.getElementById('auto-panel').style.display='block';
+  document.getElementById('active-panel').style.display='none';
+  document.getElementById('auto-text').innerHTML=`<strong>${player.name}</strong> (GK) is the last goalkeeper.<br><strong>${team.name}</strong> is the only team without a keeper.<br>Auto-assigning at the GK floor: <strong>${price} coin${price!==1?'s':''}.</strong>`;
+}
+
+function confirmAutoAssign(){
+  const {player,team}=S.pendingAutoAssign;
+  const price=Math.min(floors.gkOn?floors.gk:1,team.budget);
+  snapshot(`Auto-assign ${player.name} → ${team.name}`);
+  S.soldIds.add(player.id);
+  team.budget-=price;
+  team.players.push({name:player.name,pos:player.pos,type:'gk',price,isCap:false,isGK:true,id:player.id});
+  team.hasGK=true;
+  S.sold++;
+  S.log.unshift({player:player.name,team:team.name,price,type:'gk-auto'});
+  S.pendingAutoAssign=null;
+  document.getElementById('auto-panel').style.display='none';
+  nextPlayer();
+}
+
+function renderTeamSel(){
+  const ph=S.phases[S.phaseIdx];
+  document.getElementById('bid-team').innerHTML=S.teams.map((t,i)=>{
+    const gl=ph==='gk'&&t.hasGK&&!S.inReauction;
+    const full=t.players.length>=SQUAD_SIZE;
+    const dis=gl||full?'disabled':'';
+    const sfx=full?' (full)':gl?' (has GK)':`— ${t.budget} coins`;
+    return `<option value="${i}" ${dis}>${t.name} ${sfx}</option>`;
+  }).join('');
+}
+
+function confirmBid(){
+  const ti=parseInt(document.getElementById('bid-team').value);
+  const bid=parseInt(document.getElementById('bid-coins').value);
+  const t=S.teams[ti];const msg=document.getElementById('bid-msg');
+  const ph=S.phases[S.phaseIdx];const floor=currentFloor(ph);
+  if(isNaN(bid)||bid<1){msg.className='msg err';msg.textContent='Bid must be at least 1 coin.';return;}
+  if(!S.inReauction&&bid<floor){msg.className='msg err';msg.textContent=`Minimum bid is ${floor} coins.`;return;}
+  if(bid>t.budget){msg.className='msg err';msg.textContent=`${t.name} only has ${t.budget} coins.`;return;}
+  if(ph==='gk'&&t.hasGK&&!S.inReauction){msg.className='msg err';msg.textContent=`${t.name} already has a GK.`;return;}
+  if(t.players.length>=SQUAD_SIZE){msg.className='msg err';msg.textContent=`${t.name} squad is full.`;return;}
+  snapshot(`${S.current.name} → ${t.name} for ${bid}c`);
+  S.soldIds.add(S.current.id);
+  t.budget-=bid;
+  const type=S.inReauction?'reauction':ph==='gk'?'gk':ph==='icon'?'icon':'gen';
+  t.players.push({name:S.current.name,pos:S.current.pos,type,price:bid,id:S.current.id});
+  if(ph==='gk'&&!S.inReauction)t.hasGK=true;
+  S.sold++;
+  S.log.unshift({player:S.current.name,team:t.name,price:bid,type});
+  msg.className='msg ok';msg.textContent=`Sold to ${t.name}!`;
+  setTimeout(nextPlayer,500);
+}
+
+function skipPlayer(){
+  snapshot(`Skip ${S.current.name}`);
+  S.soldIds.add(S.current.id);
+  S.skippedPool.push(S.current);
+  S.log.unshift({player:S.current.name,team:null,type:'skip'});
+  nextPlayer();
+}
+
+function offerNext(){
+  const ni=S.phaseIdx+1;const nm=PHASE_META[S.phases[ni]];
+  document.getElementById('ob-name').textContent=`${PHASE_META[S.phases[S.phaseIdx]].label} phase done`;
+  document.getElementById('ob-meta').innerHTML=`<span style="color:var(--green);font-size:13px;">Ready for ${nm.label} phase.</span>`;
+  const btn=document.getElementById('next-phase-btn');
+  btn.textContent=`Start ${nm.label} →`;btn.style.display='inline-flex';btn.onclick=advancePhase;
+  renderStats();
+}
+
+function advancePhase(){S.phaseIdx++;loadQueue();updateTrack();nextPlayer();}
+
+function startReauction(){
+  if(!S.skippedPool.length){startDistribute();return;}
+  S.inReauction=true;
+  S.queue=[...S.skippedPool];S.skippedPool=[];
+  updateTrack();renderStats();
+  document.getElementById('ob-name').textContent='Re-auction';
+  document.getElementById('ob-meta').innerHTML=`<span style="color:var(--danger);font-size:13px;">${S.queue.length} skipped player${S.queue.length>1?'s':''} go back under the hammer. No floors apply.</span>`;
+  const btn=document.getElementById('next-phase-btn');
+  btn.textContent='Start re-auction →';btn.style.display='inline-flex';
+  btn.onclick=()=>{btn.style.display='none';btn.onclick=advancePhase;nextPlayer();};
+}
+
+function startDistribute(){
+  S.inReauction=false;
+  const unfilled=S.teams.filter(t=>t.players.length<SQUAD_SIZE);
+  if(!S.skippedPool.length||!unfilled.length){finishAuction();return;}
+  S.distQueue=[...S.skippedPool];S.skippedPool=[];
+  document.getElementById('active-panel').style.display='none';
+  document.getElementById('distribute-panel').style.display='block';
+  nextDistribute();
+}
+
+function nextDistribute(){
+  document.getElementById('dist-msg').textContent='';
+  if(!S.distQueue.length){finishAuction();return;}
+  const unfilled=S.teams.filter(t=>t.players.length<SQUAD_SIZE);
+  if(!unfilled.length){finishAuction();return;}
+  const p=S.distQueue[0];
+  document.getElementById('dist-name').textContent=p.name;
+  document.getElementById('dist-meta').innerHTML=`<span class="badge b-skip">Skipped</span><span>${p.pos}</span>`;
+  document.getElementById('dist-team').innerHTML=unfilled.map(t=>{const ri=S.teams.indexOf(t);return `<option value="${ri}">${t.name} (${SQUAD_SIZE-t.players.length} spot${SQUAD_SIZE-t.players.length>1?'s':''})</option>`;}).join('');
+  renderDistQueue();
+}
+
+function distributePlayer(){
+  const ti=parseInt(document.getElementById('dist-team').value);
+  const p=S.distQueue.shift();
+  snapshot(`Distribute ${p.name} → ${S.teams[ti].name}`);
+  S.teams[ti].players.push({name:p.name,pos:p.pos,type:'dist',price:0,id:p.id});
+  S.log.unshift({player:p.name,team:S.teams[ti].name,price:0,type:'dist'});
+  S.sold++;nextDistribute();
+}
+
+function skipDistribute(){
+  const p=S.distQueue.shift();
+  S.log.unshift({player:p.name,team:null,type:'skip-final'});
+  nextDistribute();
+}
+
+function finishAuction(){
+  ['active-panel','distribute-panel','auto-panel'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('finish-panel').style.display='block';
+}
+
+function renderDistQueue(){
+  const el=document.getElementById('dist-queue-chips');
+  const rest=S.distQueue.slice(1);
+  el.innerHTML=rest.length?rest.map(p=>`<div class="chip">${p.name}<span class="chip-pos">${p.pos}</span></div>`).join(''):'<span style="font-size:13px;color:var(--muted);">None remaining</span>';
+}
+
+function renderQueueChips(){
+  const el=document.getElementById('queue-chips');
+  el.innerHTML=S.queue.length?S.queue.map(p=>`<div class="chip">${p.name}<span class="chip-pos">${p.pos}</span></div>`).join(''):'<span style="font-size:13px;color:var(--muted);">Queue empty</span>';
+}
+
+// ===== TABS =====
+function showTab(id,btn){
+  ['tab-live','tab-squads','tab-log'].forEach(t=>document.getElementById(t).style.display='none');
+  document.getElementById(id).style.display='block';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  if(id==='tab-squads')renderSquads();
+  if(id==='tab-log')renderLog();
+}
+
+// ===== EDIT MODE =====
+let editBuffer = [];
+let editSnapshot = null;
+let editDragSrc = null;
+
+function enterEditMode(){
+  editMode=true; editBuffer=[]; editSnapshot=JSON.parse(JSON.stringify(S.teams));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab')[1].classList.add('active');
+  ['tab-live','tab-squads','tab-log'].forEach(t=>document.getElementById(t).style.display='none');
+  document.getElementById('tab-squads').style.display='block';
+  document.getElementById('edit-mode-banner').style.display='block';
+  document.getElementById('edit-save-warn').style.display='none';
+  renderEditBuffer(); renderSquads();
+}
+
+function cancelEdit(){
+  if(!confirm('Discard all changes?'))return;
+  S.teams=JSON.parse(JSON.stringify(editSnapshot));
+  editMode=false; editBuffer=[];
+  document.getElementById('edit-mode-banner').style.display='none';
+  renderSquads();
+}
+
+function saveEdit(){
+  const warn=document.getElementById('edit-save-warn');
+  const uneven=S.teams.filter(t=>t.players.length!==SQUAD_SIZE);
+  if(uneven.length){warn.style.display='block';warn.textContent=`Can't save — ${uneven.map(t=>`${t.name} has ${t.players.length}`).join(', ')} players.`;return;}
+  if(editBuffer.length){warn.style.display='block';warn.textContent=`${editBuffer.length} player${editBuffer.length>1?'s':''} still in buffer — assign them first.`;return;}
+  warn.style.display='none'; editMode=false; editBuffer=[];
+  document.getElementById('edit-mode-banner').style.display='none';
+  S.log.unshift({player:'—',team:'—',price:0,type:'edit-save'});
+  renderSquads();
+}
+
+function addNewPlayerToBuffer(){
+  const n=document.getElementById('new-player-name').value.trim();
+  const pos=document.getElementById('new-player-pos').value.trim()||'Unknown';
+  if(!n)return;
+  editBuffer.push({name:n,pos,type:'new',price:0,isCap:false,isGK:false});
+  document.getElementById('new-player-name').value='';
+  document.getElementById('new-player-pos').value='';
+  renderEditBuffer();
+}
+
+function removeFromTeam(ti,pi){
+  const p=S.teams[ti].players.splice(pi,1)[0];
+  S.teams[ti].hasGK=S.teams[ti].players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
+  editBuffer.push({...p}); renderEditBuffer(); renderSquads();
+}
+
+function assignFromBuffer(bi){
+  const p=editBuffer[bi];
+  document.getElementById('assign-modal-player').textContent=p.name+' · '+p.pos;
+  document.getElementById('assign-modal-err').textContent='';
+  document.getElementById('assign-modal-team').innerHTML=S.teams.map((t,i)=>
+    `<option value="${i}" ${t.players.length>=SQUAD_SIZE?'disabled':''}>${t.name} (${t.players.length}/${SQUAD_SIZE})${t.players.length>=SQUAD_SIZE?' — full':''}</option>`
+  ).join('');
+  document.getElementById('assign-modal-bg').dataset.bi=bi;
+  document.getElementById('assign-modal-bg').classList.add('open');
+}
+
+function confirmAssignFromBuffer(){
+  const bi=parseInt(document.getElementById('assign-modal-bg').dataset.bi);
+  const toIdx=parseInt(document.getElementById('assign-modal-team').value);
+  const toTeam=S.teams[toIdx]; const err=document.getElementById('assign-modal-err');
+  if(toTeam.players.length>=SQUAD_SIZE){err.textContent=`${toTeam.name} is full.`;return;}
+  const p=editBuffer.splice(bi,1)[0];
+  toTeam.players.push({...p});
+  toTeam.hasGK=toTeam.players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
+  document.getElementById('assign-modal-bg').classList.remove('open');
+  renderEditBuffer(); renderSquads();
+}
+
+function closeAssignModal(e){if(e.target===document.getElementById('assign-modal-bg'))document.getElementById('assign-modal-bg').classList.remove('open');}
+
+function bufferPlayerDragStart(e,bi){editDragSrc={source:'buffer',bi};e.dataTransfer.effectAllowed='move';e.currentTarget.classList.add('dragging-player');}
+function bufferPlayerDragEnd(e){e.currentTarget.classList.remove('dragging-player');}
+function bufferDragOver(e){e.preventDefault();document.getElementById('buffer-card').classList.add('drag-over-team');}
+function bufferDragLeave(){document.getElementById('buffer-card').classList.remove('drag-over-team');}
+function bufferDrop(e){
+  e.preventDefault();document.getElementById('buffer-card').classList.remove('drag-over-team');
+  if(editDragSrc&&editDragSrc.source==='team') removeFromTeam(editDragSrc.ti,editDragSrc.pi);
+  editDragSrc=null;
+}
+function teamPlayerDragStart(e,ti,pi){editDragSrc={source:'team',ti,pi};e.dataTransfer.effectAllowed='move';e.currentTarget.classList.add('dragging-player');}
+function teamPlayerDragEnd(e){e.currentTarget.classList.remove('dragging-player');}
+function teamCardDragOver(e,ti){e.preventDefault();document.getElementById('team-card-'+ti).classList.add('drag-over-team');}
+function teamCardDragLeave(ti){document.getElementById('team-card-'+ti).classList.remove('drag-over-team');}
+function teamCardDrop(e,toIdx){
+  e.preventDefault();document.getElementById('team-card-'+toIdx).classList.remove('drag-over-team');
+  if(!editDragSrc)return;
+  const toTeam=S.teams[toIdx];
+  if(toTeam.players.length>=SQUAD_SIZE){alert(`${toTeam.name} is full. Remove a player first.`);editDragSrc=null;return;}
+  if(editDragSrc.source==='buffer'){
+    const p=editBuffer.splice(editDragSrc.bi,1)[0];
+    toTeam.players.push({...p});toTeam.hasGK=toTeam.players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
+    renderEditBuffer();
+  } else if(editDragSrc.source==='team'){
+    if(editDragSrc.ti===toIdx){editDragSrc=null;return;}
+    const p=S.teams[editDragSrc.ti].players.splice(editDragSrc.pi,1)[0];
+    S.teams[editDragSrc.ti].hasGK=S.teams[editDragSrc.ti].players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
+    toTeam.players.push({...p});toTeam.hasGK=toTeam.players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
+  }
+  editDragSrc=null; renderSquads();
+}
+
+function renderEditBuffer(){
+  const el=document.getElementById('buffer-list');
+  if(!editBuffer.length){el.innerHTML='<div class="buffer-empty">No players in buffer. Remove a player from a team to add them here, or type a name below.</div>';return;}
+  el.innerHTML=editBuffer.map((p,i)=>`
+    <div class="buffer-player" draggable="true" ondragstart="bufferPlayerDragStart(event,${i})" ondragend="bufferPlayerDragEnd(event)">
+      <span style="display:flex;align-items:center;gap:8px;">
+        <span class="drag-handle">⋮⋮</span>${p.name}
+        <span class="chip-pos">${p.pos}</span>
+        ${p.type==='new'?'<span class="badge" style="background:var(--gold-dim);color:var(--gold);">New</span>':''}
+      </span>
+      <span style="display:flex;gap:6px;">
+        <button class="edit-move-btn" onclick="assignFromBuffer(${i})">Assign</button>
+        <button class="edit-move-btn" style="color:var(--danger);border-color:rgba(255,90,90,.3);" onclick="editBuffer.splice(${i},1);renderEditBuffer();">✕</button>
+      </span>
+    </div>`).join('');
+}
+
+function renderSquads(){
+  document.getElementById('squads-grid').innerHTML=S.teams.map((t,ti)=>{
+    const full=t.players.length>=SQUAD_SIZE;
+    return `<div class="team-card ${full&&!editMode?'team-full':''} ${editMode&&full?'team-full':''}" id="team-card-${ti}"
+      ${editMode?`ondragover="teamCardDragOver(event,${ti})" ondragleave="teamCardDragLeave(${ti})" ondrop="teamCardDrop(event,${ti})"`:''}>
+      <div class="team-header">
+        <div><div class="team-name-disp">${t.name}</div><div style="font-size:12px;color:var(--muted);">${t.players.length}/${SQUAD_SIZE} players</div></div>
+        <div style="text-align:right;"><div class="team-coins">${t.budget}</div><div class="team-coins-lbl">coins left</div></div>
+      </div>
+      ${t.players.map((p,pi)=>{
+        const typeKey=['gk','gk-cap','gk-auto'].includes(p.type)?'gk':p.type==='icon'?'icon':p.type==='cap'?'cap':'gen';
+        const typeLabel=p.type==='gk'||p.type==='gk-auto'?'GK':p.type==='gk-cap'?'GK+C':p.type==='icon'?'Icon':p.type==='cap'?'Cap':'Gen';
+        return `<div class="player-row ${editMode?'draggable':''}"
+          ${editMode?`draggable="true" ondragstart="teamPlayerDragStart(event,${ti},${pi})" ondragend="teamPlayerDragEnd(event)"`:''}>
+          <span style="display:flex;align-items:center;gap:5px;">
+            ${editMode?'<span class="drag-handle">⋮⋮</span>':''}
+            ${p.isCap?'<span class="badge b-cap" style="font-size:9px;">C</span>':''}${p.name}
+          </span>
+          <span style="display:flex;gap:5px;align-items:center;">
+            <span style="font-size:11px;color:var(--muted);">${p.price>0?p.price+'c':'free'}</span>
+            <span class="badge b-${typeKey}">${typeLabel}</span>
+            ${editMode?`<button class="edit-move-btn" style="color:var(--danger);border-color:rgba(255,90,90,.3);" onclick="removeFromTeam(${ti},${pi})">Remove</button>`:''}
+          </span>
+        </div>`;
+      }).join('')}
+      ${t.players.length<SQUAD_SIZE?`<div class="unfilled">${SQUAD_SIZE-t.players.length} spot(s) unfilled</div>`:''}
+      ${editMode?`<div style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center;border-top:1px dashed var(--border);padding-top:6px;">← drag from buffer here</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function renderLog(){
+  const el=document.getElementById('full-log');
+  if(!S.log.length){el.innerHTML='<div class="log-entry" style="color:var(--muted);">No sales yet.</div>';return;}
+  el.innerHTML=S.log.map(e=>{
+    if(e.type==='skip'||e.type==='skip-final') return `<div class="log-entry"><span class="le-name">${e.player}</span><span class="badge b-skip">skipped</span></div>`;
+    if(e.type==='dist') return `<div class="log-entry"><span class="le-name">${e.player}</span><span><span class="le-team">${e.team}</span>&nbsp;<span class="badge b-skip">free</span></span></div>`;
+    if(e.type==='gk-auto') return `<div class="log-entry"><span class="le-name">${e.player}</span><span><span class="le-team">${e.team}</span>&nbsp;${e.price}c&nbsp;<span class="badge b-auto">Auto</span></span></div>`;
+    if(e.type==='edit-move') return `<div class="log-entry"><span class="le-name">${e.player}</span><span><span class="le-team">${e.team}</span>&nbsp;<span class="badge" style="background:var(--gold-dim);color:var(--gold);">Moved</span></span></div>`;
+    if(e.type==='edit-save') return `<div class="log-entry"><span style="color:var(--gold);">Squads manually edited &amp; saved</span></div>`;
+    const bc=e.type==='gk'?'b-gk':e.type==='icon'?'b-icon':e.type==='cap'?'b-cap':e.type==='reauction'?'b-skip':'b-gen';
+    const bl=e.type==='gk'?'GK':e.type==='icon'?'Icon':e.type==='cap'?'Cap':e.type==='reauction'?'Re-auc':'Gen';
+    return `<div class="log-entry"><span class="le-name">${e.player}</span><span><span class="le-team">${e.team}</span>&nbsp;${e.price}c&nbsp;<span class="badge ${bc}">${bl}</span></span></div>`;
+  }).join('');
+}
+
+initSetup();
+</script>
+</body>
+</html>
