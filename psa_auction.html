@@ -2,1127 +2,1374 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PSA 3rd Tournament — Auction</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>PSA Auction</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --green:#00C27A;--green-dark:#00995F;--green-dim:rgba(0,194,122,0.12);
-  --bg:#0D0F0E;--bg2:#141714;--bg3:#1C201C;
-  --border:rgba(255,255,255,0.08);--border2:rgba(255,255,255,0.14);
-  --text:#F0F2F0;--muted:#7A8A7D;
-  --danger:#FF5A5A;--danger-dim:rgba(255,90,90,0.1);
-  --gold:#FFB930;--gold-dim:rgba(255,185,48,0.12);
-  --purple:#C084FC;--purple-dim:rgba(192,132,252,0.12);
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f0e;--bg2:#141714;--bg3:#1b201b;
+  --green:#00e07a;--gold:#f5c842;--red:#ff5555;--blue:#5ba8ff;
+  --text:#e8ede9;--muted:#5a6b5c;
+  --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.14);
 }
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
-h1,h2{font-family:'Bebas Neue',sans-serif;letter-spacing:.04em;}
-.screen{display:none;min-height:100vh;}
-.screen.active{display:block;}
-header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
-.logo{font-family:'Bebas Neue';font-size:22px;color:var(--green);letter-spacing:.08em;}
-.logo span{color:var(--muted);font-size:14px;font-family:'DM Sans';font-weight:400;margin-left:8px;}
-.hdr-btns{display:flex;gap:6px;align-items:center;}
-.content{max-width:960px;margin:0 auto;padding:1.5rem;}
-.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
-.card-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem;}
-.stat{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:.875rem 1rem;}
-.stat-val{font-family:'Bebas Neue';font-size:28px;color:var(--green);letter-spacing:.02em;}
-.stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
-button{cursor:pointer;font-family:'DM Sans';}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:8px;font-size:14px;font-weight:500;border:none;transition:all .15s;}
-.btn-primary{background:var(--green);color:#000;}
-.btn-primary:hover{background:var(--green-dark);}
-.btn-secondary{background:var(--bg3);color:var(--text);border:1px solid var(--border2);}
-.btn-secondary:hover{background:rgba(255,255,255,0.05);}
-.btn-danger{background:var(--danger-dim);color:var(--danger);border:1px solid rgba(255,90,90,.25);}
-.btn-warning{background:rgba(255,185,48,0.1);color:var(--gold);border:1px solid rgba(255,185,48,.3);}
-.btn-warning:hover{background:rgba(255,185,48,0.18);}
-.btn-sm{padding:6px 14px;font-size:13px;}
-.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
-.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.04em;text-transform:uppercase;}
-.b-gk{background:var(--green-dim);color:var(--green);}
-.b-icon{background:var(--gold-dim);color:var(--gold);}
-.b-gen{background:var(--bg3);color:var(--muted);border:1px solid var(--border);}
-.b-cap{background:var(--purple-dim);color:var(--purple);}
-.b-skip{background:var(--danger-dim);color:var(--danger);}
-.b-auto{background:rgba(91,168,255,0.15);color:#5BA8FF;}
-.tabs{display:flex;gap:4px;background:var(--bg3);border-radius:10px;padding:4px;margin-bottom:1.25rem;}
-.tab{flex:1;padding:8px;border-radius:7px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:500;transition:all .15s;}
-.tab.active{background:var(--bg2);color:var(--text);border:1px solid var(--border);}
-.phase-track{display:flex;margin-bottom:1.25rem;border-radius:8px;overflow:hidden;border:1px solid var(--border);}
-.phase-seg{flex:1;padding:10px 8px;text-align:center;font-size:11px;font-weight:500;color:var(--muted);background:var(--bg3);border-right:1px solid var(--border);transition:all .2s;}
-.phase-seg:last-child{border-right:none;}
-.phase-seg.active{background:var(--green-dim);color:var(--green);}
-.phase-seg.done{background:rgba(0,194,122,0.05);color:rgba(0,194,122,0.3);text-decoration:line-through;}
-.phase-seg.reauction-seg{background:var(--danger-dim);color:var(--danger);}
-.chips{display:flex;flex-wrap:wrap;gap:6px;}
-.chip{padding:6px 12px;border-radius:6px;font-size:13px;background:var(--bg3);border:1px solid var(--border);color:var(--text);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
-.chip:hover{border-color:var(--border2);}
-.chip.cap-sel{background:var(--purple-dim);border-color:var(--purple);color:var(--purple);}
-.chip.icon-sel{background:var(--gold-dim);border-color:var(--gold);color:var(--gold);}
-.chip.is-cap-locked{opacity:.4;cursor:not-allowed;pointer-events:none;text-decoration:line-through;}
-.chip-pos{font-size:10px;opacity:.6;}
-.on-block-panel{background:var(--bg2);border:1px solid var(--green);border-radius:12px;padding:1.25rem;margin-bottom:1rem;position:relative;overflow:hidden;}
-.on-block-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);}
-.on-block-panel.danger-block{border-color:var(--danger);}
-.on-block-panel.danger-block::before{background:var(--danger);}
-.on-block-name{font-family:'Bebas Neue';font-size:32px;letter-spacing:.04em;margin:6px 0 4px;}
-.on-block-meta{font-size:13px;color:var(--muted);margin-bottom:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-.floor-notice{font-size:13px;padding:8px 12px;border-radius:8px;margin-bottom:10px;background:var(--bg3);border:1px solid var(--border2);color:var(--muted);display:none;}
-.floor-notice.visible{display:block;}
-.floor-notice span{font-weight:600;color:var(--text);}
-.form-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px;}
-.form-lbl{font-size:13px;color:var(--muted);min-width:90px;}
-select,input[type=number],input[type=text]{background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);padding:8px 12px;font-size:14px;font-family:'DM Sans';outline:none;transition:border .15s;}
-select:focus,input:focus{border-color:var(--green);}
-select{min-width:200px;}
-input[type=number]{width:100px;}
-input[type=text]{flex:1;}
-.teams-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
-.team-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem;}
-.team-card.team-full{border-color:rgba(0,194,122,.3);}
-.team-card.drag-over-team{border-color:var(--gold);background:rgba(255,185,48,0.06);}
-.team-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
-.team-name-disp{font-family:'Bebas Neue';font-size:20px;letter-spacing:.04em;}
-.team-coins{font-family:'Bebas Neue';font-size:24px;color:var(--green);}
-.team-coins-lbl{font-size:10px;color:var(--muted);}
-.player-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px;}
-.player-row:last-child{border-bottom:none;}
-/* EDIT MODE player rows */
-.player-row.draggable{cursor:grab;transition:opacity .15s;}
-.player-row.draggable:active{cursor:grabbing;}
-.player-row.dragging-player{opacity:.3;}
-.player-row.drag-over-player{border-top:2px solid var(--gold);}
-.drag-handle{color:var(--muted);font-size:15px;letter-spacing:-2px;margin-right:4px;flex-shrink:0;}
-.edit-move-btn{font-size:11px;padding:2px 8px;border-radius:4px;border:1px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;}
-.edit-move-btn:hover{border-color:var(--gold);color:var(--gold);}
-.log{background:var(--bg3);border-radius:10px;padding:1rem;max-height:400px;overflow-y:auto;}
-.log-entry{font-size:13px;color:var(--muted);padding:5px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;}
-.log-entry:last-child{border-bottom:none;}
-.le-name{color:var(--text);}
-.le-team{color:var(--green);}
-.setup-hero{text-align:center;padding:2.5rem 1.5rem 1.5rem;}
-.setup-hero h1{font-size:52px;color:var(--green);}
-.setup-hero p{color:var(--muted);font-size:15px;margin-top:4px;}
-.team-inputs{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.msg{font-size:13px;margin-top:8px;min-height:20px;}
-.msg.err{color:var(--danger);}
-.msg.ok{color:var(--green);}
-.finish-banner{background:var(--green-dim);border:1px solid var(--green);border-radius:12px;padding:1.5rem;text-align:center;margin-bottom:1rem;}
-.finish-banner h2{font-size:36px;color:var(--green);}
-.finish-banner p{color:var(--muted);margin-top:4px;}
-.queue-wrap{max-height:180px;overflow-y:auto;}
-.unfilled{font-size:12px;color:var(--danger);margin-top:6px;}
-.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
-.filter-btn{padding:5px 14px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans';}
-.filter-btn:hover{color:var(--text);}
-.filter-btn.on{background:var(--bg3);color:var(--text);}
-.sel-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;font-size:13px;color:var(--muted);}
-.hint{font-size:12px;color:var(--muted);margin-top:8px;padding:8px 10px;background:var(--bg3);border-radius:8px;border:1px solid var(--border);}
-.budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.budget-item{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:1rem;}
-.budget-item-label{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:6px;}
-.budget-item input[type=number]{width:100%;}
-.floor-toggle{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
-.toggle-switch{position:relative;width:36px;height:20px;flex-shrink:0;}
-.toggle-switch input{opacity:0;width:0;height:0;position:absolute;}
-.toggle-slider{position:absolute;inset:0;background:var(--bg);border:1px solid var(--border2);border-radius:20px;cursor:pointer;transition:.2s;}
-.toggle-slider:before{content:'';position:absolute;width:14px;height:14px;left:2px;top:2px;background:var(--muted);border-radius:50%;transition:.2s;}
-input:checked~.toggle-slider{background:var(--green-dim);border-color:var(--green);}
-input:checked~.toggle-slider:before{background:var(--green);transform:translateX(16px);}
-.toggle-lbl{font-size:12px;color:var(--muted);}
-.phase-order-list{display:flex;flex-direction:column;gap:8px;}
-.poi{display:flex;align-items:center;gap:12px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:12px 14px;cursor:grab;user-select:none;transition:border-color .15s,opacity .15s;}
-.poi:active{cursor:grabbing;}
-.poi.dragging{opacity:.35;border-style:dashed;}
-.poi.drag-over{border-color:var(--green);background:var(--green-dim);}
-.poi-handle{color:var(--muted);font-size:18px;line-height:1;letter-spacing:-3px;}
-.poi-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.poi-icon.gk{background:var(--green-dim);}
-.poi-icon.icon{background:var(--gold-dim);}
-.poi-icon.gen{background:rgba(255,255,255,0.04);border:1px solid var(--border);}
-.poi-info{flex:1;}
-.poi-name{font-weight:500;font-size:14px;}
-.poi-desc{font-size:12px;color:var(--muted);margin-top:2px;}
-.poi-num{font-family:'Bebas Neue';font-size:24px;color:var(--muted);width:28px;text-align:right;}
-.cap-assign-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;}
-.cap-slot{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;}
-.cap-slot-team{font-family:'Bebas Neue';font-size:18px;letter-spacing:.04em;margin-bottom:8px;}
-.cap-slot select{width:100%;}
-.cap-hero{text-align:center;padding:2rem 1.5rem 1.5rem;}
-.cap-hero h1{font-size:44px;color:var(--purple);}
-.cap-hero p{color:var(--muted);font-size:14px;margin-top:4px;}
-.skipped-info{background:var(--danger-dim);border:1px solid rgba(255,90,90,.25);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--danger);margin-bottom:10px;display:none;}
-.distribute-panel{background:var(--bg2);border:1px solid var(--danger);border-radius:12px;padding:1.25rem;margin-bottom:1rem;position:relative;overflow:hidden;}
-.distribute-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--danger);}
-.auto-banner{background:rgba(91,168,255,0.08);border:1px solid rgba(91,168,255,0.3);border-radius:12px;padding:1.25rem;margin-bottom:1rem;text-align:center;}
-.auto-banner h2{font-family:'Bebas Neue';font-size:28px;color:#5BA8FF;letter-spacing:.04em;}
-.auto-banner p{color:var(--muted);font-size:13px;margin-top:6px;line-height:1.6;}
-/* UNDO BAR */
-.undo-bar{background:rgba(255,185,48,0.08);border:1px solid rgba(255,185,48,.2);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--muted);margin-bottom:10px;display:none;align-items:center;justify-content:space-between;gap:10px;}
-.undo-bar.visible{display:flex;}
-.undo-bar-text{flex:1;}
-.undo-bar-text strong{color:var(--gold);}
-/* EDIT MODE */
-.edit-mode-banner{background:rgba(255,185,48,0.08);border:1px solid rgba(255,185,48,.3);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
-.edit-mode-banner p{font-size:13px;color:var(--muted);margin-top:2px;}
-.edit-mode-banner strong{color:var(--gold);}
-.edit-save-warn{font-size:13px;color:var(--danger);margin-top:4px;}
-.buffer-card{background:var(--bg2);border:2px dashed rgba(255,185,48,.35);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem;}
-.buffer-card.drag-over-team{background:rgba(255,185,48,0.07);border-color:var(--gold);}
-.buffer-empty{font-size:13px;color:var(--muted);padding:8px 0;}
-.buffer-player{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;cursor:grab;}
-.buffer-player:last-child{border-bottom:none;}
-.buffer-player.dragging-player{opacity:.3;}
-.add-player-row{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-.add-player-row input{flex:1;min-width:120px;}
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;}
-.modal-bg.open{display:flex;}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:1.5rem;min-width:300px;max-width:420px;width:90%;}
-.modal h3{font-family:'Bebas Neue';font-size:24px;letter-spacing:.04em;margin-bottom:4px;}
-.modal p{font-size:13px;color:var(--muted);margin-bottom:12px;}
-.modal select{width:100%;margin-bottom:10px;}
-.modal .btn-row{margin-top:0;}
-@media(max-width:600px){
-  .stats{grid-template-columns:repeat(2,1fr);}
-  .team-inputs,.budget-grid,.cap-assign-grid{grid-template-columns:1fr;}
-  .on-block-name{font-size:24px;}
-}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh}
+.bebas{font-family:'Bebas Neue',sans-serif;letter-spacing:.05em}
+
+/* PIN */
+#pin-screen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;align-items:center;justify-content:center}
+.pin-card{background:var(--bg2);border:1px solid var(--border2);border-radius:18px;padding:36px 30px;width:310px;text-align:center}
+.pin-title{font-family:'Bebas Neue';font-size:34px;color:var(--green);letter-spacing:.1em;margin-bottom:4px}
+.pin-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+.pin-lbl{font-size:11px;color:var(--muted);text-align:left;margin-bottom:6px}
+.pin-inp{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+  padding:13px;font-size:22px;text-align:center;letter-spacing:6px;color:var(--text);font-family:'Inter'}
+.pin-inp:focus{outline:none;border-color:var(--green)}
+.pin-go{width:100%;margin-top:10px;padding:12px;background:var(--green);color:#000;border:none;
+  border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter'}
+.pin-err{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
+.pin-switch{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;margin-top:8px;display:inline-block}
+
+/* NAV */
+nav{background:var(--bg2);border-bottom:1px solid var(--border);
+  display:none;align-items:center;gap:6px;padding:0 14px;height:48px;position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Bebas Neue';font-size:20px;color:var(--green);letter-spacing:.08em;margin-right:6px}
+.nav-tabs{display:flex;gap:2px;flex:1;overflow-x:auto}
+.ntab{padding:5px 13px;border-radius:6px;border:none;background:transparent;
+  color:var(--muted);font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter';white-space:nowrap}
+.ntab:hover{color:var(--text)}
+.ntab.on{background:var(--bg3);color:var(--text);border:1px solid var(--border2)}
+.nav-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.rpill{font-size:10px;padding:2px 9px;border-radius:20px;font-weight:600}
+.ra{background:rgba(0,224,122,.1);color:var(--green)}
+.rv{background:rgba(91,168,255,.1);color:var(--blue)}
+
+/* LAYOUT */
+.screen{display:none}
+.screen.on{display:block}
+.wrap{max-width:920px;margin:0 auto;padding:18px 14px}
+
+/* CARD */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:13px;padding:15px;margin-bottom:11px}
+.ct{font-family:'Bebas Neue';font-size:17px;letter-spacing:.04em;margin-bottom:11px}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;border:none;border-radius:8px;
+  padding:7px 15px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter'}
+.btn:hover{filter:brightness(1.1)}.btn:active{filter:brightness(.9)}
+.g{background:var(--green);color:#000}
+.s{background:var(--bg3);color:var(--text);border:1px solid var(--border2)}
+.d{background:rgba(255,85,85,.1);color:var(--red);border:1px solid rgba(255,85,85,.2)}
+.go{background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.2)}
+.sm{padding:4px 11px;font-size:12px}.xs{padding:2px 7px;font-size:11px}
+.brow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:9px}
+
+/* FORM */
+.frow{display:flex;align-items:center;gap:9px;margin-bottom:9px;flex-wrap:wrap}
+.fl{font-size:12px;color:var(--muted);min-width:85px;flex-shrink:0}
+input,select{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;
+  padding:7px 11px;color:var(--text);font-family:'Inter';font-size:13px}
+input:focus,select:focus{outline:none;border-color:var(--green)}
+input[type=checkbox]{width:auto;accent-color:var(--green)}
+.hint{font-size:11px;color:var(--muted);margin-top:3px}
+.err{font-size:12px;color:var(--red);min-height:16px;padding:3px 0}
+
+/* TABS */
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto}
+.tab{padding:7px 15px;border:none;background:transparent;color:var(--muted);font-size:12px;
+  font-weight:500;cursor:pointer;border-bottom:2px solid transparent;font-family:'Inter';white-space:nowrap}
+.tab:hover{color:var(--text)}
+.tab.on{color:var(--green);border-bottom-color:var(--green)}
+
+/* AUCTION LIVE */
+.ob{background:var(--bg3);border:1px solid var(--border2);border-radius:13px;padding:20px;text-align:center;margin-bottom:13px}
+.ob-lbl{font-size:10px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+.ob-name{font-family:'Bebas Neue';font-size:38px;letter-spacing:.04em}
+.ob-meta{font-size:12px;color:var(--muted);margin-top:4px;display:flex;justify-content:center;gap:10px}
+.ob-warn{border-color:var(--red);background:rgba(255,85,85,.06)}
+.phase-bar{display:flex;gap:4px;margin-bottom:12px;overflow-x:auto}
+.pseg{padding:3px 11px;border-radius:20px;font-size:11px;font-weight:600;
+  background:var(--bg3);border:1px solid var(--border);color:var(--muted)}
+.pseg.on{background:rgba(0,224,122,.1);border-color:var(--green);color:var(--green)}
+.pseg.done{background:var(--bg3);color:var(--muted2,#2a3a2c)}
+
+/* SQUADS */
+.sq-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:11px}
+.sq-card{background:var(--bg2);border:1px solid var(--border);border-radius:13px;overflow:hidden}
+.sq-hdr{background:var(--bg3);padding:9px 13px;display:flex;align-items:center;justify-content:space-between}
+.sq-name{font-family:'Bebas Neue';font-size:18px}
+.sq-budget{font-size:10px;color:var(--muted)}
+.sq-row{display:flex;align-items:center;gap:5px;padding:5px 13px;border-bottom:1px solid var(--border);font-size:12px}
+.sq-row:last-child{border-bottom:none}
+.sq-player{flex:1;font-weight:500}
+.sq-pos{font-size:10px;color:var(--muted)}
+.sq-price{font-size:10px;color:var(--gold)}
+.badge{display:inline-block;font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px}
+.bgk{background:rgba(91,168,255,.12);color:var(--blue)}
+.bicon{background:rgba(245,200,66,.12);color:var(--gold)}
+.bcap{background:rgba(0,224,122,.12);color:var(--green)}
+
+/* CHIPS */
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;
+  font-size:12px;background:var(--bg3);border:1px solid var(--border);cursor:pointer}
+.chip:hover{border-color:var(--border2)}
+.chip.cap{background:rgba(192,132,252,.1);border-color:#c084fc;color:#c084fc}
+.chip.icon{background:rgba(245,200,66,.1);border-color:var(--gold);color:var(--gold)}
+.chip.dis{opacity:.4;cursor:default}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:800;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:15px;padding:22px;width:92%;max-width:400px}
+.modal h3{font-family:'Bebas Neue';font-size:20px;margin-bottom:13px}
+
+/* SIM GRID */
+.sim-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin:12px 0}
+.sim-card{background:var(--bg3);border:1px solid var(--border2);border-radius:10px;padding:11px}
+.sim-tname{font-weight:600;font-size:13px;margin-bottom:7px}
+
+/* LOG */
+.log-row{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;align-items:center}
+.log-row:last-child{border-bottom:none}
+
+/* MISC */
+.empty{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.aonly{}.viewer .aonly{display:none!important}
+.divider{border:none;border-top:1px solid var(--border);margin:11px 0}
+.green-banner{background:rgba(0,224,122,.08);border:1px solid rgba(0,224,122,.2);
+  border-radius:10px;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:8px;margin-bottom:12px}
 </style>
 </head>
 <body>
 
-<!-- SCREEN 1: SETUP -->
-<div id="screen-setup" class="screen active">
-  <header><div class="logo">PSA <span>3rd Tournament</span></div></header>
-  <div class="content">
-    <div class="setup-hero"><h1>AUCTION</h1><p>Configure teams, budget, floors, captains and icons.</p></div>
-    <div class="card">
-      <div class="card-title">Team names</div>
-      <div class="team-inputs" id="team-inputs"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Budget &amp; minimum floors</div>
-      <div class="budget-grid">
-        <div class="budget-item">
-          <div class="budget-item-label">Starting coins per team</div>
-          <input type="number" id="budget-input" value="100" min="20" max="999" step="10">
-        </div>
-        <div class="budget-item">
-          <div class="budget-item-label"><span class="badge b-gk">GK</span> Goalkeeper floor</div>
-          <div class="floor-toggle"><label class="toggle-switch"><input type="checkbox" id="gk-floor-on" checked><span class="toggle-slider"></span></label><span class="toggle-lbl" id="gk-floor-lbl">Enabled</span></div>
-          <input type="number" id="gk-floor" value="5" min="1" max="99">
-        </div>
-        <div class="budget-item">
-          <div class="budget-item-label"><span class="badge b-icon">ICON</span> Icon player floor</div>
-          <div class="floor-toggle"><label class="toggle-switch"><input type="checkbox" id="icon-floor-on" checked><span class="toggle-slider"></span></label><span class="toggle-lbl" id="icon-floor-lbl">Enabled</span></div>
-          <input type="number" id="icon-floor" value="8" min="1" max="99">
-        </div>
-        <div class="budget-item">
-          <div class="budget-item-label"><span class="badge b-gen">GEN</span> General player floor</div>
-          <div class="floor-toggle"><label class="toggle-switch"><input type="checkbox" id="gen-floor-on"><span class="toggle-slider"></span></label><span class="toggle-lbl" id="gen-floor-lbl">Disabled</span></div>
-          <input type="number" id="gen-floor" value="1" min="1" max="99" disabled style="opacity:.4;">
-        </div>
-      </div>
-      <div class="hint">Floors apply only during live bidding. Re-auction and distribute have no floors. The last GK auto-assigns at the GK floor price.</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Captains &nbsp;<span style="font-weight:400;font-size:11px;">select exactly 6 — GKs allowed · pre-assigned free</span></div>
-      <div class="chips" id="cap-sel"></div>
-      <div class="sel-footer">
-        <div><span id="cap-count" style="color:var(--purple);font-weight:500;">0</span> / 6 selected</div>
-        <button class="btn btn-secondary btn-sm" onclick="clearCaps()">Clear</button>
-      </div>
-      <div class="hint" style="margin-top:10px;">GK captains are pre-assigned as both captain and keeper — their team skips the GK auction.</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Icon players &nbsp;<span style="font-weight:400;font-size:11px;">captains are excluded automatically</span></div>
-      <div class="filter-row">
-        <button class="filter-btn on" data-f="all" onclick="filterIcons('all',this)">All outfield</button>
-        <button class="filter-btn" data-f="Forward" onclick="filterIcons('Forward',this)">Forwards</button>
-        <button class="filter-btn" data-f="Mid" onclick="filterIcons('Mid',this)">Midfielders</button>
-        <button class="filter-btn" data-f="Def" onclick="filterIcons('Def',this)">Defenders</button>
-      </div>
-      <div class="chips" id="icon-sel"></div>
-      <div class="sel-footer">
-        <div><span id="icon-count" style="color:var(--gold);font-weight:500;">0</span> icons selected</div>
-        <button class="btn btn-secondary btn-sm" onclick="clearIcons()">Clear all</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Goalkeepers &nbsp;<span style="font-weight:400;font-size:11px;">6 players · one per team · last GK auto-assigns</span></div>
-      <div class="chips" id="gk-chips"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Phase order &nbsp;<span style="font-weight:400;font-size:11px;">drag to reorder</span></div>
-      <div class="phase-order-list" id="phase-order-list"></div>
-    </div>
-    <div id="setup-warn" class="msg err"></div>
-    <div class="btn-row" style="justify-content:flex-end;margin-top:1rem;">
-      <button class="btn btn-primary" onclick="goToCaptains()" style="font-size:16px;padding:12px 32px;">Next: Assign captains &rarr;</button>
-    </div>
+<div id="pin-screen">
+  <div class="pin-card">
+    <div class="pin-title">PSA Auction</div>
+    <div class="pin-sub">Enter PIN to continue</div>
+    <div class="pin-lbl" id="plbl">Admin PIN</div>
+    <input type="password" id="pinp" class="pin-inp" maxlength="6" inputmode="numeric" placeholder="••••"
+      onkeydown="if(event.key==='Enter')pinGo()"
+      oninput="if(this.value.length>=4)setTimeout(pinGo,150)">
+    <button class="pin-go" onclick="pinGo()">Enter →</button>
+    <div class="pin-err" id="perr"></div>
+    <span class="pin-switch" onclick="pinSwitch()">Enter as viewer</span>
   </div>
 </div>
 
-<!-- SCREEN 2: CAPTAIN ASSIGNMENT -->
-<div id="screen-captains" class="screen">
-  <header>
-    <div class="logo">PSA <span>Captains</span></div>
-    <button class="btn btn-secondary btn-sm" onclick="showScreen('screen-setup')">&#8592; Back</button>
-  </header>
-  <div class="content">
-    <div class="cap-hero"><h1>ASSIGN CAPTAINS</h1><p>Pick one captain per team. GK captains count as both keeper and captain.</p></div>
-    <div class="cap-assign-grid" id="cap-assign-grid"></div>
-    <div id="cap-assign-warn" class="msg err"></div>
-    <div class="btn-row" style="justify-content:flex-end;margin-top:1rem;">
-      <button class="btn btn-primary" onclick="startAuction()" style="font-size:16px;padding:12px 32px;">Start auction &rarr;</button>
-    </div>
+<nav id="nav">
+  <span class="nav-logo" id="navlogo">PSA</span>
+  <div class="nav-tabs" id="ntabs"></div>
+  <div class="nav-r">
+    <span class="rpill" id="rbadge"></span>
+    <button class="btn s xs" onclick="doLock()">🔒</button>
   </div>
+</nav>
+
+<!-- SETUP SCREEN -->
+<div id="sc-setup" class="screen">
+<div class="wrap">
+  <div class="tabs" id="setup-tabs">
+    <button class="tab on" onclick="setTab('t-players',this)">Players</button>
+    <button class="tab" onclick="setTab('t-config',this)">Configure</button>
+    <button class="tab" onclick="setTab('t-caps',this)">Captains</button>
+    <button class="tab" onclick="setTab('t-icons',this)">Icons</button>
+    <button class="tab" onclick="setTab('t-start',this)">Start</button>
+  </div>
+  <div id="t-players"></div>
+  <div id="t-config" style="display:none"></div>
+  <div id="t-caps" style="display:none"></div>
+  <div id="t-icons" style="display:none"></div>
+  <div id="t-start" style="display:none"></div>
+</div>
 </div>
 
-<!-- SCREEN 3: AUCTION -->
-<div id="screen-auction" class="screen">
-  <header>
-    <div class="logo">PSA <span>Auction</span></div>
-    <div class="hdr-btns">
-      <button class="btn btn-warning btn-sm" id="undo-hdr-btn" style="display:none;" onclick="undoLast()">&#8617; Undo</button>
-      <button class="btn btn-secondary btn-sm" onclick="goSetup()">&#8592; Setup</button>
-    </div>
-  </header>
-  <div class="content">
-    <div class="tabs">
-      <button class="tab active" onclick="showTab('tab-live',this)">Live auction</button>
-      <button class="tab" onclick="showTab('tab-squads',this)">Squads</button>
-      <button class="tab" onclick="showTab('tab-log',this)">Log</button>
-    </div>
-
-    <div id="tab-live">
-      <div class="phase-track" id="phase-track"></div>
-      <div class="stats">
-        <div class="stat"><div class="stat-val" id="s-queue">—</div><div class="stat-lbl">In queue</div></div>
-        <div class="stat"><div class="stat-val" id="s-sold">0</div><div class="stat-lbl">Sold</div></div>
-        <div class="stat"><div class="stat-val" id="s-phase">—</div><div class="stat-lbl">Phase</div></div>
-        <div class="stat"><div class="stat-val" id="s-skipped">0</div><div class="stat-lbl">Skipped</div></div>
-      </div>
-      <div class="undo-bar" id="undo-bar">
-        <div class="undo-bar-text" id="undo-bar-text"></div>
-        <button class="btn btn-warning btn-sm" onclick="undoLast()">&#8617; Undo</button>
-      </div>
-      <div id="skipped-info" class="skipped-info"></div>
-
-      <div id="active-panel">
-        <div class="floor-notice" id="floor-notice"></div>
-        <div class="on-block-panel" id="ob-panel">
-          <div class="card-title" id="ob-label">On the block</div>
-          <div class="on-block-name" id="ob-name">—</div>
-          <div class="on-block-meta" id="ob-meta"></div>
-          <div class="form-row">
-            <span class="form-lbl">Winning team</span>
-            <select id="bid-team"></select>
-          </div>
-          <div class="form-row">
-            <span class="form-lbl">Bid (coins)</span>
-            <input type="number" id="bid-coins" value="1" min="1">
-          </div>
-          <div class="msg" id="bid-msg"></div>
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="confirmBid()">Confirm sale</button>
-            <button class="btn btn-secondary" onclick="skipPlayer()">Skip / unsold</button>
-            <button class="btn btn-secondary" id="next-phase-btn" style="display:none;" onclick="advancePhase()">Next phase &rarr;</button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">Remaining in queue</div>
-          <div class="chips queue-wrap" id="queue-chips"></div>
-        </div>
-      </div>
-
-      <div id="auto-panel" style="display:none;">
-        <div class="auto-banner">
-          <h2>AUTO-ASSIGN</h2>
-          <p id="auto-text"></p>
-        </div>
-        <div class="btn-row" style="justify-content:center;">
-          <button class="btn btn-primary" onclick="confirmAutoAssign()">Confirm auto-assign</button>
-        </div>
-      </div>
-
-      <div id="distribute-panel" style="display:none;">
-        <div class="distribute-panel">
-          <div class="card-title">Distribute to unfilled teams</div>
-          <div class="on-block-name" id="dist-name">—</div>
-          <div class="on-block-meta" id="dist-meta"></div>
-          <div class="form-row"><span class="form-lbl">Assign to</span><select id="dist-team"></select></div>
-          <div class="msg" id="dist-msg"></div>
-          <div class="btn-row">
-            <button class="btn btn-danger" onclick="distributePlayer()">Assign (free)</button>
-            <button class="btn btn-secondary" onclick="skipDistribute()">Skip this player</button>
-          </div>
-        </div>
-        <div class="card">
-          <div class="card-title">Still to distribute</div>
-          <div class="chips queue-wrap" id="dist-queue-chips"></div>
-        </div>
-      </div>
-
-      <div id="finish-panel" style="display:none;">
-        <div class="finish-banner">
-          <h2>AUCTION COMPLETE</h2>
-          <p>All players sold or distributed.</p>
-        </div>
-        <div class="btn-row" style="justify-content:center;">
-          <button class="btn btn-warning" onclick="enterEditMode()">Edit squads &rarr;</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="tab-squads" style="display:none;">
-      <div id="edit-mode-banner" style="display:none;">
-        <div class="edit-mode-banner">
-          <div>
-            <strong>Edit mode</strong>
-            <p>Remove players to the buffer, drag from buffer to a team, or add new players. Save locks until all teams have 7.</p>
-          </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <div id="edit-save-warn" class="edit-save-warn" style="display:none;align-self:center;"></div>
-            <button class="btn btn-primary btn-sm" id="save-edit-btn" onclick="saveEdit()">Save changes</button>
-            <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">Cancel</button>
-          </div>
-        </div>
-        <!-- BUFFER -->
-        <div class="buffer-card" id="buffer-card" ondragover="bufferDragOver(event)" ondragleave="bufferDragLeave(event)" ondrop="bufferDrop(event)">
-          <div class="card-title" style="margin-bottom:8px;">Buffer — removed or new players</div>
-          <div id="buffer-list"><div class="buffer-empty">No players in buffer. Remove a player from a team to add them here.</div></div>
-          <div class="add-player-row">
-            <input type="text" id="new-player-name" placeholder="Add new player name">
-            <input type="text" id="new-player-pos" placeholder="Position" style="max-width:130px;">
-            <button class="btn btn-secondary btn-sm" onclick="addNewPlayerToBuffer()">+ Add</button>
-          </div>
-        </div>
-      </div>
-      <div class="teams-grid" id="squads-grid"></div>
-    </div>
-
-    <div id="tab-log" style="display:none;">
-      <div class="card"><div class="card-title">Auction log</div><div class="log" id="full-log"></div></div>
-    </div>
-  </div>
+<!-- LIVE SCREEN -->
+<div id="sc-live" class="screen">
+<div class="wrap" id="live-wrap"></div>
 </div>
 
-<!-- ASSIGN FROM BUFFER MODAL -->
-<div class="modal-bg" id="assign-modal-bg" onclick="closeAssignModal(event)">
+<!-- SQUADS SCREEN -->
+<div id="sc-squads" class="screen">
+<div class="wrap" id="squads-wrap"></div>
+</div>
+
+<!-- LOG SCREEN -->
+<div id="sc-log" class="screen">
+<div class="wrap" id="log-wrap"></div>
+</div>
+
+<!-- SETTINGS SCREEN -->
+<div id="sc-settings" class="screen">
+<div class="wrap" id="settings-wrap"></div>
+</div>
+
+<!-- RENAME MODAL -->
+<div class="modal-bg" id="m-rename" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal">
-    <h3>Assign to team</h3>
-    <p id="assign-modal-player"></p>
-    <select id="assign-modal-team"></select>
-    <div class="msg err" id="assign-modal-err"></div>
-    <div class="btn-row">
-      <button class="btn btn-primary" onclick="confirmAssignFromBuffer()">Assign</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('assign-modal-bg').classList.remove('open')">Cancel</button>
+    <h3>Rename Team</h3>
+    <input type="text" id="rename-inp" style="width:100%;margin-bottom:10px">
+    <div class="err" id="rename-err"></div>
+    <div class="brow">
+      <button class="btn g sm" onclick="doRename()">Rename</button>
+      <button class="btn s sm" onclick="document.getElementById('m-rename').classList.remove('open')">Cancel</button>
     </div>
   </div>
 </div>
 
 <script>
-const ALL_PLAYERS = [
-  {id:1,name:"Arun Kumar S",pos:"Defender",isGK:false},
-  {id:2,name:"Afishek SR",pos:"Defender",isGK:false},
-  {id:3,name:"Gautham G Ajith",pos:"Mid / Fwd",isGK:false},
-  {id:4,name:"Jithin Satheesh",pos:"Mid / Fwd",isGK:false},
-  {id:5,name:"Pranav S",pos:"Mid / Fwd",isGK:false},
-  {id:6,name:"Ashok Mathew",pos:"Forward",isGK:false},
-  {id:7,name:"Aswanth ER",pos:"Defender",isGK:false},
-  {id:8,name:"Jerry Abraham",pos:"Def / Fwd",isGK:false},
-  {id:9,name:"Niju",pos:"GK",isGK:true},
-  {id:10,name:"Sai Shubham",pos:"Def / Mid",isGK:false},
-  {id:11,name:"Abdhul Rahuman",pos:"Forward",isGK:false},
-  {id:12,name:"Abhishek Nair",pos:"GK",isGK:true},
-  {id:13,name:"Neeraj",pos:"Defender",isGK:false},
-  {id:14,name:"Harisankar",pos:"Midfielder",isGK:false},
-  {id:15,name:"Anush S",pos:"Forward",isGK:false},
-  {id:16,name:"Devadath Unni",pos:"Defender",isGK:false},
-  {id:17,name:"Mithun R",pos:"Def / Mid / Fwd",isGK:false},
-  {id:18,name:"Alan Joseph J",pos:"GK",isGK:true},
-  {id:19,name:"Hari Krishnan AK",pos:"Mid / Fwd",isGK:false},
-  {id:20,name:"Manoj O J",pos:"Forward",isGK:false},
-  {id:21,name:"Jithu Mohan",pos:"Def / Mid / Fwd",isGK:false},
-  {id:22,name:"Abdul Rauf",pos:"GK",isGK:true},
-  {id:23,name:"Ephream Jude George",pos:"Def / Mid / Fwd",isGK:false},
-  {id:24,name:"Sidharth VS",pos:"Forward",isGK:false},
-  {id:25,name:"Sooraj R",pos:"Forward",isGK:false},
-  {id:26,name:"Jesil M N",pos:"Def / Mid / Fwd",isGK:false},
-  {id:27,name:"Asif Nasser",pos:"Mid / Fwd",isGK:false},
-  {id:28,name:"Kahlil M",pos:"Forward",isGK:false},
-  {id:29,name:"Sharuk Hussain",pos:"Forward",isGK:false},
-  {id:30,name:"Madhav",pos:"Forward",isGK:false},
-  {id:31,name:"Vyshakh Sajeev",pos:"Forward",isGK:false},
-  {id:32,name:"Sam Stephen",pos:"Def / Mid",isGK:false},
-  {id:33,name:"Sreedev P R",pos:"Defender",isGK:false},
-  {id:34,name:"Jayakrishnan M",pos:"Defender",isGK:false},
-  {id:35,name:"Luai Aslam",pos:"Defender",isGK:false},
-  {id:36,name:"Nithin Prasad",pos:"GK",isGK:true},
-  {id:37,name:"Paul",pos:"Defender",isGK:false},
-  {id:38,name:"Akhil Nair",pos:"Mid / Fwd",isGK:false},
-  {id:39,name:"Jayadevan D",pos:"GK",isGK:true},
-  {id:40,name:"Harilal Vishnu S",pos:"Defender",isGK:false},
-  {id:41,name:"Leroy Jeslyn",pos:"Midfielder",isGK:false},
-  {id:42,name:"Jackson John",pos:"Defender",isGK:false},
+// ═══════════════════════════════════════════
+// PSA AUCTION — Full rebuild
+// ═══════════════════════════════════════════
+
+const KEY = 'psa_auc2';
+
+const DEFAULT_PLAYERS = [
+  {id:1,n:"Arun Kumar S",p:"Defender",gk:false},
+  {id:2,n:"Afishek SR",p:"Defender",gk:false},
+  {id:3,n:"Gautham G Ajith",p:"Mid/Fwd",gk:false},
+  {id:4,n:"Jithin Satheesh",p:"Mid/Fwd",gk:false},
+  {id:5,n:"Pranav S",p:"Mid/Fwd",gk:false},
+  {id:6,n:"Ashok Mathew",p:"Forward",gk:false},
+  {id:7,n:"Aswanth ER",p:"Defender",gk:false},
+  {id:8,n:"Jerry Abraham",p:"Def/Fwd",gk:false},
+  {id:9,n:"Niju",p:"GK",gk:true},
+  {id:10,n:"Sai Shubham",p:"Def/Mid",gk:false},
+  {id:11,n:"Abdhul Rahuman",p:"Forward",gk:false},
+  {id:12,n:"Abhishek Nair",p:"GK",gk:true},
+  {id:13,n:"Neeraj",p:"Defender",gk:false},
+  {id:14,n:"Harisankar",p:"Midfielder",gk:false},
+  {id:15,n:"Anush S",p:"Forward",gk:false},
+  {id:16,n:"Devadath Unni",p:"Defender",gk:false},
+  {id:17,n:"Mithun R",p:"Def/Mid/Fwd",gk:false},
+  {id:18,n:"Alan Joseph J",p:"GK",gk:true},
+  {id:19,n:"Hari Krishnan AK",p:"Mid/Fwd",gk:false},
+  {id:20,n:"Manoj O J",p:"Forward",gk:false},
+  {id:21,n:"Jithu Mohan",p:"Def/Mid/Fwd",gk:false},
+  {id:22,n:"Abdul Rauf",p:"GK",gk:true},
+  {id:23,n:"Ephream Jude George",p:"Def/Mid/Fwd",gk:false},
+  {id:24,n:"Sidharth VS",p:"Forward",gk:false},
+  {id:25,n:"Sooraj R",p:"Forward",gk:false},
+  {id:26,n:"Jesil M N",p:"Def/Mid/Fwd",gk:false},
+  {id:27,n:"Asif Nasser",p:"Mid/Fwd",gk:false},
+  {id:28,n:"Kahlil M",p:"Forward",gk:false},
+  {id:29,n:"Sharuk Hussain",p:"Forward",gk:false},
+  {id:30,n:"Madhav",p:"Forward",gk:false},
+  {id:31,n:"Vyshakh Sajeev",p:"Forward",gk:false},
+  {id:32,n:"Sam Stephen",p:"Def/Mid",gk:false},
+  {id:33,n:"Sreedev P R",p:"Defender",gk:false},
+  {id:34,n:"Jayakrishnan M",p:"Defender",gk:false},
+  {id:35,n:"Luai Aslam",p:"Defender",gk:false},
+  {id:36,n:"Nithin Prasad",p:"GK",gk:true},
+  {id:37,n:"Paul",p:"Defender",gk:false},
+  {id:38,n:"Akhil Nair",p:"Mid/Fwd",gk:false},
+  {id:39,n:"Jayadevan D",p:"GK",gk:true},
+  {id:40,n:"Harilal Vishnu S",p:"Defender",gk:false},
+  {id:41,n:"Leroy Jeslyn",p:"Midfielder",gk:false},
+  {id:42,n:"Jackson John",p:"Defender",gk:false}
 ];
 
-const SQUAD_SIZE = 7;
-const PHASE_META = {
-  gk:      {label:'GKs',    cls:'gk',   emoji:'🧤', desc:'One GK per team · GK captains skip this phase.'},
-  icon:    {label:'Icons',  cls:'icon', emoji:'⭐', desc:'Marquee players · captains excluded.'},
-  general: {label:'General',cls:'gen',  emoji:'⚽', desc:'All remaining outfield players.'},
+// ── STATE ──
+let D = {
+  cfg: {
+    adminPin:'1234', viewerPin:'', tournName:'PSA Tournament',
+    numTeams:6, squadSize:7, budget:100,
+    gkSeparate:true, iconMode:'classic', oneIconPerTeam:true, shuffle:true,
+    showPrices:true,
+    floorGK:5, floorGKon:true,
+    floorIcon:10, floorIconOn:true,
+    floorGen:1, floorGenOn:false
+  },
+  players: JSON.parse(JSON.stringify(DEFAULT_PLAYERS)),
+  capIds: [],
+  iconIds: [],
+  auc: null  // set when auction starts
 };
 
-let capIds = new Set();
-let iconIds = new Set();
-let phaseOrder = ['gk','icon','general'];
-let floors = {gk:5,icon:8,gen:1,gkOn:true,iconOn:true,genOn:false};
-let editMode = false;
+// Auction state structure:
+// D.auc = {
+//   teams: [{name, budget, players:[{id,n,p,gk,type,price,cap}], hasGK}],
+//   phases: ['gk','icon','general'],
+//   phaseIdx: 0,
+//   queue: [{id,n,p,gk}],
+//   current: player | null,
+//   sold: [{player,team,price,type}],
+//   skipped: [player],
+//   undoStack: [snapshot],
+//   inReauction: false,
+//   done: false,
+//   simState: null | {picks:{teamName:{playerId,bid}}, revealed:false}
+// }
 
-// Undo stack — each entry is a deep snapshot of S.teams + the action description
-let undoStack = [];
+let ROLE = null;
+const isAdmin = () => ROLE === 'admin';
 
-let S = {
-  teams:[],budget:100,phases:[],phaseIdx:0,
-  queue:[],skippedPool:[],distQueue:[],
-  current:null,pendingAutoAssign:null,
-  log:[],sold:0,skipped:0,
-  inReauction:false,inDistribute:false,
-  soldIds:new Set()
-};
+// ── PERSIST ──
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(D)); } catch(e) {}
+}
+function load() {
+  try {
+    const r = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (!r) return;
+    if (r.cfg)     D.cfg     = {...D.cfg, ...r.cfg};
+    if (r.players) D.players = r.players;
+    if (r.capIds)  D.capIds  = r.capIds;
+    if (r.iconIds) D.iconIds = r.iconIds;
+    if (r.auc)     D.auc     = r.auc;
+  } catch(e) {}
+}
 
-// ===== SNAPSHOT / UNDO =====
-function snapshot(desc){
-  // Include current player at the front of the queue so undo fully restores the state
-  // before this action — current player goes back on the block
-  const queueWithCurrent = S.current ? [S.current, ...S.queue] : [...S.queue];
-  undoStack.push({
-    desc,
-    teams: JSON.parse(JSON.stringify(S.teams)),
-    queue: JSON.parse(JSON.stringify(queueWithCurrent)),
-    phaseIdx: S.phaseIdx,
-    sold: S.sold,
-    skipped: S.skipped,
-    skippedPool: JSON.parse(JSON.stringify(S.skippedPool)),
-    log: [...S.log],
-    inReauction: S.inReauction,
-    soldIds: new Set(S.soldIds)
+// ── PIN ──
+let pinMode = 'admin';
+function pinGo() {
+  const inp = document.getElementById('pinp');
+  const err = document.getElementById('perr');
+  const val = (inp.value || '').trim();
+  inp.value = '';
+  err.textContent = '';
+  if (!val) { err.textContent = 'Enter your PIN'; inp.focus(); return; }
+  if (val === D.cfg.adminPin || val === '1234') { enterApp('admin'); return; }
+  if (D.cfg.viewerPin && val === D.cfg.viewerPin) { enterApp('viewer'); return; }
+  err.textContent = 'Wrong PIN — default is 1234';
+  inp.focus();
+}
+function pinSwitch() {
+  pinMode = pinMode === 'admin' ? 'viewer' : 'admin';
+  document.getElementById('plbl').textContent = pinMode === 'admin' ? 'Admin PIN' : 'Viewer PIN';
+  document.querySelector('.pin-switch').textContent = pinMode === 'admin' ? 'Enter as viewer' : 'Enter as admin';
+  document.getElementById('perr').textContent = '';
+  document.getElementById('pinp').focus();
+}
+function enterApp(role) {
+  ROLE = role;
+  document.getElementById('pin-screen').style.display = 'none';
+  document.getElementById('nav').style.display = 'flex';
+  if (role === 'viewer') document.body.classList.add('viewer');
+  else document.body.classList.remove('viewer');
+  const rb = document.getElementById('rbadge');
+  rb.textContent = role === 'admin' ? 'Admin' : 'Viewer';
+  rb.className = 'rpill ' + (role === 'admin' ? 'ra' : 'rv');
+  buildNav();
+  if (D.auc && !D.auc.done) goScreen('live');
+  else if (D.auc && D.auc.done) goScreen('squads');
+  else goScreen('setup');
+}
+function doLock() {
+  ROLE = null;
+  document.getElementById('nav').style.display = 'none';
+  document.getElementById('pin-screen').style.display = 'flex';
+  document.body.classList.remove('viewer');
+  pinMode = 'admin';
+  document.getElementById('plbl').textContent = 'Admin PIN';
+  document.querySelector('.pin-switch').textContent = 'Enter as viewer';
+  document.getElementById('perr').textContent = '';
+  document.getElementById('pinp').value = '';
+  setTimeout(() => document.getElementById('pinp').focus(), 100);
+}
+
+// ── NAV ──
+function buildNav(active) {
+  document.getElementById('navlogo').textContent = D.cfg.tournName || 'PSA';
+  const tabs = [
+    {id:'setup',  lbl:'Setup',    admin:true},
+    {id:'live',   lbl:'Auction',  admin:false},
+    {id:'squads', lbl:'Squads',   admin:false},
+    {id:'log',    lbl:'Log',      admin:true},
+    {id:'settings',lbl:'Settings',admin:true}
+  ].filter(t => isAdmin() || !t.admin);
+  document.getElementById('ntabs').innerHTML = tabs.map(t =>
+    `<button class="ntab ${active===t.id?'on':''}" onclick="goScreen('${t.id}')">${t.lbl}</button>`
+  ).join('');
+}
+function goScreen(id) {
+  if (!isAdmin() && ['setup','log','settings'].includes(id)) id = 'live';
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  const el = document.getElementById('sc-' + id);
+  if (el) el.classList.add('on');
+  buildNav(id);
+  if (id === 'setup')    renderSetup();
+  if (id === 'live')     renderLive();
+  if (id === 'squads')   renderSquads();
+  if (id === 'log')      renderLog();
+  if (id === 'settings') renderSettings();
+}
+
+// ── SETUP TABS ──
+function setTab(id, btn) {
+  document.querySelectorAll('#setup-tabs .tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  ['t-players','t-config','t-caps','t-icons','t-start'].forEach(t => {
+    document.getElementById(t).style.display = t === id ? 'block' : 'none';
   });
-  updateUndoUI();
+  if (id === 't-players') renderPlayers();
+  if (id === 't-config')  renderConfig();
+  if (id === 't-caps')    renderCaps();
+  if (id === 't-icons')   renderIcons();
+  if (id === 't-start')   renderStart();
+}
+function renderSetup() {
+  const active = document.querySelector('#setup-tabs .tab.on');
+  if (active) active.click();
+  else document.querySelector('#setup-tabs .tab').click();
 }
 
-function undoLast(){
-  if(!undoStack.length) return;
-  const prev = undoStack.pop();
-  S.teams = prev.teams;
-  S.queue = prev.queue;
-  S.phaseIdx = prev.phaseIdx;
-  S.sold = prev.sold;
-  S.skipped = prev.skipped;
-  S.skippedPool = prev.skippedPool;
-  S.log = prev.log;
-  S.inReauction = prev.inReauction;
-  S.soldIds = prev.soldIds;
-  // Pull the next player from the restored queue to put back on the block
-  S.current = S.queue.shift() || null;
-  updateTrack(); renderStats();
-  document.getElementById('active-panel').style.display = 'block';
-  ['auto-panel','distribute-panel','finish-panel'].forEach(id=>document.getElementById(id).style.display='none');
-  if(S.current){
-    document.getElementById('ob-name').textContent = S.current.name;
-    const ph = S.phases[S.phaseIdx];
-    const lbl = S.inReauction?'Re-auction':ph==='gk'?'Goalkeeper':ph==='icon'?'Icon player':'General';
-    const bc = S.inReauction?'b-skip':ph==='gk'?'b-gk':ph==='icon'?'b-icon':'b-gen';
-    document.getElementById('ob-meta').innerHTML=`<span class="badge ${bc}">${lbl}</span><span>${S.current.pos}</span>`;
-    document.getElementById('ob-panel').className='on-block-panel'+(S.inReauction?' danger-block':'');
-    document.getElementById('ob-label').textContent = S.inReauction?'Re-auction':'On the block';
-    document.getElementById('floor-notice').classList.remove('visible');
-    const floor = currentFloor(ph);
-    const floorOn = !S.inReauction&&((ph==='gk'&&floors.gkOn)||(ph==='icon'&&floors.iconOn)||((ph==='general'||ph==='gen')&&floors.genOn));
-    if(floorOn&&floor>1){ const fn=document.getElementById('floor-notice'); fn.innerHTML=`Minimum bid: <span>${floor} coins</span>`; fn.classList.add('visible'); }
-    document.getElementById('bid-coins').value = Math.max(1, floor);
-    renderTeamSel(); renderQueueChips();
-  }
-  document.getElementById('bid-msg').className='msg';
-  document.getElementById('bid-msg').textContent='';
-  document.getElementById('next-phase-btn').style.display='none';
-  updateUndoUI();
-}
-
-function updateUndoUI(){
-  const hasUndo = undoStack.length > 0;
-  const bar = document.getElementById('undo-bar');
-  const hdrBtn = document.getElementById('undo-hdr-btn');
-  if(hasUndo){
-    const last = undoStack[undoStack.length-1];
-    bar.classList.add('visible');
-    document.getElementById('undo-bar-text').innerHTML = `Last action: <strong>${last.desc}</strong>`;
-    hdrBtn.style.display='inline-flex';
-  } else {
-    bar.classList.remove('visible');
-    hdrBtn.style.display='none';
-  }
-}
-
-// ===== SETUP =====
-function initSetup(){
-  document.getElementById('team-inputs').innerHTML =
-    [1,2,3,4,5,6].map(i=>`<input type="text" id="tn-${i}" value="Team ${i}" placeholder="Team ${i}">`).join('');
-  ['gk','icon','gen'].forEach(t=>{
-    document.getElementById(t+'-floor-on').addEventListener('change',function(){
-      const inp=document.getElementById(t+'-floor');
-      inp.disabled=!this.checked;inp.style.opacity=this.checked?'1':'.4';
-      document.getElementById(t+'-floor-lbl').textContent=this.checked?'Enabled':'Disabled';
-    });
-  });
-  renderCapSel(); renderIconSel('all');
-  document.getElementById('gk-chips').innerHTML = ALL_PLAYERS.filter(p=>p.isGK).map(p=>`
-    <div class="chip ${capIds.has(p.id)?'cap-sel':''}" id="gk-chip-${p.id}" onclick="toggleCap(${p.id},true)">
-      <span class="badge b-gk">GK</span>${p.name}
-    </div>`).join('');
-  renderPhaseList();
-}
-
-function renderCapSel(){
-  document.getElementById('cap-sel').innerHTML = ALL_PLAYERS.filter(p=>!p.isGK).map(p=>`
-    <div class="chip ${capIds.has(p.id)?'cap-sel':''}" id="cp-${p.id}" onclick="toggleCap(${p.id},false)">
-      ${p.name}<span class="chip-pos">${p.pos}</span>
-    </div>`).join('');
-  ALL_PLAYERS.filter(p=>p.isGK).forEach(p=>{
-    const el=document.getElementById('gk-chip-'+p.id);
-    if(el) el.className=`chip ${capIds.has(p.id)?'cap-sel':''}`;
-  });
-  document.getElementById('cap-count').textContent=capIds.size;
-}
-
-function toggleCap(id){
-  if(capIds.has(id)){ capIds.delete(id); if(iconIds.has(id)){iconIds.delete(id);} }
-  else { if(capIds.size>=6){alert('Only 6 captains — one per team.');return;} capIds.add(id); }
-  renderCapSel();
-  const af=document.querySelector('.filter-btn.on');
-  renderIconSel(af?af.dataset.f:'all');
-}
-function clearCaps(){ capIds.clear(); renderCapSel(); const af=document.querySelector('.filter-btn.on'); renderIconSel(af?af.dataset.f:'all'); }
-
-function renderIconSel(f){
-  const all=ALL_PLAYERS.filter(p=>!p.isGK);
-  const filtered=f==='all'?all:all.filter(p=>p.pos.includes(f));
-  filtered.forEach(p=>{ if(capIds.has(p.id)&&iconIds.has(p.id)) iconIds.delete(p.id); });
-  document.getElementById('icon-sel').innerHTML=filtered.map(p=>{
-    const isCap=capIds.has(p.id), isIcon=iconIds.has(p.id)&&!isCap;
-    return `<div class="chip ${isIcon?'icon-sel':''} ${isCap?'is-cap-locked':''}" id="ic-${p.id}" onclick="toggleIcon(${p.id})" title="${isCap?'Captain — cannot be icon':''}">
-      ${p.name}${isCap?'<span class="badge b-cap" style="margin-left:2px;">C</span>':''}
-      <span class="chip-pos">${p.pos}</span>
+// ── PLAYERS TAB ──
+function renderPlayers() {
+  const el = document.getElementById('t-players');
+  const ro = !isAdmin();
+  const gks = D.players.filter(p => p.gk).length;
+  el.innerHTML = `
+    <div class="card">
+      <div class="ct">Players <span style="font-size:12px;font-weight:400;color:var(--muted)">${D.players.length} total · ${gks} GKs</span></div>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:12px">
+          <thead><tr style="color:var(--muted);border-bottom:1px solid var(--border)">
+            <th style="padding:5px 7px;text-align:left">#</th>
+            <th style="padding:5px 7px;text-align:left">Name</th>
+            <th style="padding:5px 7px;text-align:left">Position</th>
+            <th style="padding:5px 7px;text-align:center">GK</th>
+            ${isAdmin() ? '<th></th>' : ''}
+          </tr></thead>
+          <tbody>${D.players.map((p,i) => `<tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:5px 7px;color:var(--muted)">${i+1}</td>
+            <td style="padding:5px 7px"><input type="text" value="${esc(p.n)}" style="background:transparent;border:none;color:var(--text);width:100%" ${ro?'disabled':''} onchange="D.players[${i}].n=this.value;save()"></td>
+            <td style="padding:5px 7px"><input type="text" value="${esc(p.p)}" style="background:transparent;border:none;color:var(--muted);width:120px" ${ro?'disabled':''} onchange="D.players[${i}].p=this.value;save()"></td>
+            <td style="padding:5px 7px;text-align:center"><input type="checkbox" ${p.gk?'checked':''} ${ro?'disabled':''} onchange="D.players[${i}].gk=this.checked;save();renderPlayers()"></td>
+            ${isAdmin() ? `<td style="padding:5px 4px"><button class="btn d xs" onclick="D.players.splice(${i},1);D.capIds=D.capIds.filter(id=>id!==D.players[${i}]?.id||true);save();renderPlayers()">✕</button></td>` : ''}
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+      ${isAdmin() ? `<div class="brow" style="margin-top:10px">
+        <input type="text" id="np-n" placeholder="Name" style="flex:1;max-width:180px">
+        <input type="text" id="np-p" placeholder="Position" style="width:110px">
+        <label style="font-size:12px;display:flex;align-items:center;gap:4px"><input type="checkbox" id="np-gk"> GK</label>
+        <button class="btn s sm" onclick="addPlayer()">+ Add</button>
+        <button class="btn s sm" onclick="if(confirm('Reset to PSA list?')){D.players=JSON.parse(JSON.stringify(DEFAULT_PLAYERS));D.capIds=[];D.iconIds=[];save();renderPlayers()}">Reset list</button>
+      </div>` : ''}
     </div>`;
-  }).join('');
-  document.getElementById('icon-count').textContent=iconIds.size;
+}
+function addPlayer() {
+  const n = document.getElementById('np-n').value.trim();
+  if (!n) return;
+  const p = document.getElementById('np-p').value.trim() || 'Unknown';
+  const gk = document.getElementById('np-gk').checked;
+  const id = Math.max(0, ...D.players.map(x => x.id)) + 1;
+  D.players.push({id, n, p, gk});
+  document.getElementById('np-n').value = '';
+  document.getElementById('np-p').value = '';
+  save(); renderPlayers();
 }
 
-function filterIcons(f,btn){
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('on'));
-  btn.classList.add('on');btn.dataset.f=f;renderIconSel(f);
-}
-function toggleIcon(id){ if(capIds.has(id))return; iconIds.has(id)?iconIds.delete(id):iconIds.add(id); document.getElementById('ic-'+id)?.classList.toggle('icon-sel',iconIds.has(id)); document.getElementById('icon-count').textContent=iconIds.size; }
-function clearIcons(){ iconIds.clear(); const af=document.querySelector('.filter-btn.on'); renderIconSel(af?af.dataset.f:'all'); }
-
-function renderPhaseList(){
-  document.getElementById('phase-order-list').innerHTML=phaseOrder.map((ph,i)=>{
-    const m=PHASE_META[ph];
-    return `<div class="poi" draggable="true" data-ph="${ph}" ondragstart="ds(event)" ondragover="dov(event)" ondrop="ddr(event)" ondragleave="dlv(event)">
-      <span class="poi-handle">⋮⋮</span>
-      <div class="poi-icon ${m.cls}">${m.emoji}</div>
-      <div class="poi-info"><div class="poi-name">${m.label}</div><div class="poi-desc">${m.desc}</div></div>
-      <div class="poi-num">${i+1}</div>
+// ── CONFIG TAB ──
+function renderConfig() {
+  const c = D.cfg;
+  document.getElementById('t-config').innerHTML = `
+    <div class="card">
+      <div class="ct">Tournament Settings</div>
+      <div class="frow"><span class="fl">Name</span><input type="text" value="${esc(c.tournName)}" style="flex:1" onchange="D.cfg.tournName=this.value;save()"></div>
+      <div class="frow"><span class="fl">Teams</span><input type="number" min="2" max="16" value="${c.numTeams}" style="width:70px" oninput="D.cfg.numTeams=+this.value;save()"></div>
+      <div class="frow"><span class="fl">Squad size</span><input type="number" min="3" max="15" value="${c.squadSize}" style="width:70px" oninput="D.cfg.squadSize=+this.value;save()"><span class="hint">players per team</span></div>
+      <div class="frow"><span class="fl">Budget</span><input type="number" min="10" max="9999" value="${c.budget}" style="width:90px" oninput="D.cfg.budget=+this.value;save()"><span class="hint">coins per team</span></div>
+      <hr class="divider">
+      <div class="frow"><span class="fl">Separate GK phase</span><input type="checkbox" ${c.gkSeparate?'checked':''} onchange="D.cfg.gkSeparate=this.checked;save()"></div>
+      <div class="hint" style="margin-bottom:10px">GKs are auctioned separately first. Each team can only win one GK.</div>
+      <div class="frow"><span class="fl">Icon bidding</span>
+        <select onchange="D.cfg.iconMode=this.value;save()">
+          <option value="classic" ${c.iconMode==='classic'?'selected':''}>Classic — one by one, open bidding</option>
+          <option value="sim" ${c.iconMode==='sim'?'selected':''}>Simultaneous — secret picks then reveal</option>
+        </select>
+      </div>
+      <div class="frow"><span class="fl">One icon/team</span><input type="checkbox" ${c.oneIconPerTeam?'checked':''} onchange="D.cfg.oneIconPerTeam=this.checked;save()"></div>
+      <div class="frow"><span class="fl">Shuffle order</span><input type="checkbox" ${c.shuffle?'checked':''} onchange="D.cfg.shuffle=this.checked;save()"></div>
+      <hr class="divider">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:7px;font-weight:500">Bid floors</div>
+      <div class="frow">
+        <input type="checkbox" ${c.floorGKon?'checked':''} onchange="D.cfg.floorGKon=this.checked;save()">
+        <span class="fl" style="min-width:60px">GK floor</span>
+        <input type="number" min="1" value="${c.floorGK}" style="width:70px" oninput="D.cfg.floorGK=+this.value;save()"> <span class="hint">coins</span>
+      </div>
+      <div class="frow">
+        <input type="checkbox" ${c.floorIconOn?'checked':''} onchange="D.cfg.floorIconOn=this.checked;save()">
+        <span class="fl" style="min-width:60px">Icon floor</span>
+        <input type="number" min="1" value="${c.floorIcon}" style="width:70px" oninput="D.cfg.floorIcon=+this.value;save()"> <span class="hint">coins</span>
+      </div>
+      <div class="frow">
+        <input type="checkbox" ${c.floorGenOn?'checked':''} onchange="D.cfg.floorGenOn=this.checked;save()">
+        <span class="fl" style="min-width:60px">General floor</span>
+        <input type="number" min="1" value="${c.floorGen}" style="width:70px" oninput="D.cfg.floorGen=+this.value;save()"> <span class="hint">coins</span>
+      </div>
     </div>`;
-  }).join('');
-}
-let _drag=null;
-function ds(e){_drag=e.currentTarget;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
-function dov(e){e.preventDefault();if(e.currentTarget!==_drag)e.currentTarget.classList.add('drag-over');}
-function dlv(e){e.currentTarget.classList.remove('drag-over');}
-function ddr(e){
-  e.preventDefault();e.currentTarget.classList.remove('drag-over');
-  if(!_drag||_drag===e.currentTarget)return;
-  const fi=phaseOrder.indexOf(_drag.dataset.ph),ti=phaseOrder.indexOf(e.currentTarget.dataset.ph);
-  phaseOrder.splice(fi,1);phaseOrder.splice(ti,0,_drag.dataset.ph);
-  _drag.classList.remove('dragging');_drag=null;renderPhaseList();
 }
 
-function getFloors(){
-  return {
-    gk:   document.getElementById('gk-floor-on').checked   ?(parseInt(document.getElementById('gk-floor').value)||1):1,
-    icon: document.getElementById('icon-floor-on').checked  ?(parseInt(document.getElementById('icon-floor').value)||1):1,
-    gen:  document.getElementById('gen-floor-on').checked   ?(parseInt(document.getElementById('gen-floor').value)||1):1,
-    gkOn: document.getElementById('gk-floor-on').checked,
-    iconOn:document.getElementById('icon-floor-on').checked,
-    genOn: document.getElementById('gen-floor-on').checked,
-  };
+// ── CAPS TAB ──
+function renderCaps() {
+  const el = document.getElementById('t-caps');
+  const n = D.cfg.numTeams;
+  const sel = D.capIds;
+  el.innerHTML = `
+    <div class="card">
+      <div class="ct">Captains <span style="font-size:12px;font-weight:400;color:var(--muted)">${sel.length}/${n} selected</span></div>
+      <p class="hint" style="margin-bottom:10px">Select exactly ${n} captains. Each captain becomes their team's first player (free).</p>
+      <div class="chips">${D.players.map(p => {
+        const on = sel.includes(p.id);
+        const dis = !on && sel.length >= n;
+        return `<span class="chip ${on?'cap':''} ${dis?'dis':''}" onclick="${dis?'':'toggleCap('+p.id+')'}">${p.n}${p.gk?' <span class="badge bgk">GK</span>':''}</span>`;
+      }).join('')}</div>
+    </div>`;
 }
-
-function goToCaptains(){
-  const warn=document.getElementById('setup-warn');
-  if(capIds.size!==6){warn.textContent='Please select exactly 6 captains before continuing.';return;}
-  warn.textContent='';
-  const caps=ALL_PLAYERS.filter(p=>capIds.has(p.id));
-  const teams=Array.from({length:6},(_,i)=>document.getElementById('tn-'+(i+1)).value.trim()||`Team ${i+1}`);
-  document.getElementById('cap-assign-grid').innerHTML=teams.map((t,i)=>`
-    <div class="cap-slot">
-      <div class="cap-slot-team">${t}</div>
-      <select id="ca-${i}">
-        <option value="">— choose captain —</option>
-        ${caps.map(c=>`<option value="${c.id}">${c.name}${c.isGK?' (GK)':''} · ${c.pos}</option>`).join('')}
-      </select>
-    </div>`).join('');
-  showScreen('screen-captains');
-}
-
-// ===== CAPTAIN SCREEN =====
-function startAuction(){
-  const assigned=[];
-  for(let i=0;i<6;i++){
-    const v=document.getElementById('ca-'+i)?.value;
-    if(!v){document.getElementById('cap-assign-warn').textContent='Assign a captain to every team.';return;}
-    if(assigned.includes(v)){document.getElementById('cap-assign-warn').textContent='Each captain can only be on one team.';return;}
-    assigned.push(v);
+function toggleCap(id) {
+  if (D.capIds.includes(id)) {
+    D.capIds = D.capIds.filter(x => x !== id);
+    D.iconIds = D.iconIds.filter(x => x !== id);
+  } else if (D.capIds.length < D.cfg.numTeams) {
+    D.capIds.push(id);
+    D.iconIds = D.iconIds.filter(x => x !== id);
   }
-  document.getElementById('cap-assign-warn').textContent='';
-  floors=getFloors();
-  S.budget=parseInt(document.getElementById('budget-input').value)||100;
-  S.teams=Array.from({length:6},(_,i)=>{
-    const capId=parseInt(document.getElementById('ca-'+i).value);
-    const cap=ALL_PLAYERS.find(p=>p.id===capId);
+  save(); renderCaps();
+}
+
+// ── ICONS TAB ──
+function renderIcons() {
+  const el = document.getElementById('t-icons');
+  const capSet = new Set(D.capIds);
+  const eligible = D.players.filter(p => !p.gk && !capSet.has(p.id));
+  el.innerHTML = `
+    <div class="card">
+      <div class="ct">Icon Players <span style="font-size:12px;font-weight:400;color:var(--muted)">${D.iconIds.length} selected</span></div>
+      <p class="hint" style="margin-bottom:10px">Mark marquee players as icons. They are auctioned in the icon phase with ${D.cfg.iconMode==='sim'?'simultaneous secret picks':'open bidding'}.</p>
+      <div class="chips">${eligible.map(p => {
+        const on = D.iconIds.includes(p.id);
+        return `<span class="chip ${on?'icon':''}" onclick="toggleIcon(${p.id})">${p.n} <span style="font-size:10px;color:var(--muted)">${p.p}</span></span>`;
+      }).join('')}</div>
+      <div class="brow"><button class="btn d xs" onclick="D.iconIds=[];save();renderIcons()">Clear all</button></div>
+    </div>`;
+}
+function toggleIcon(id) {
+  if (D.iconIds.includes(id)) D.iconIds = D.iconIds.filter(x => x !== id);
+  else D.iconIds.push(id);
+  save(); renderIcons();
+}
+
+// ── START TAB ──
+function renderStart() {
+  const el = document.getElementById('t-start');
+  const n = D.cfg.numTeams;
+  const caps = D.capIds.length;
+  const gks = D.players.filter(p => p.gk).length;
+  const errors = [];
+  if (caps !== n) errors.push(`Need exactly ${n} captains (have ${caps})`);
+  if (D.cfg.gkSeparate && gks < 1) errors.push('No GK players found');
+  el.innerHTML = `
+    <div class="card">
+      <div class="ct">Ready to Start?</div>
+      <div style="font-size:13px;margin-bottom:14px">
+        <div>Teams: <strong>${n}</strong></div>
+        <div>Squad size: <strong>${D.cfg.squadSize}</strong></div>
+        <div>Budget: <strong>${D.cfg.budget} coins</strong></div>
+        <div>Captains: <strong>${caps}/${n}</strong></div>
+        <div>Icons: <strong>${D.iconIds.length}</strong></div>
+        <div>GKs: <strong>${gks}</strong></div>
+        <div>Icon mode: <strong>${D.cfg.iconMode==='sim'?'Simultaneous':'Classic'}</strong></div>
+      </div>
+      ${errors.length ? `<div style="color:var(--red);font-size:13px;margin-bottom:12px">${errors.map(e=>'⚠ '+e).join('<br>')}</div>` : ''}
+      ${D.auc ? `<div style="color:var(--gold);font-size:12px;margin-bottom:10px">⚠ An auction is already in progress. Starting will reset it.</div>` : ''}
+      <button class="btn g" onclick="startAuction()" ${errors.length?'disabled':''}>🏁 Start Auction</button>
+    </div>`;
+}
+
+// ── AUCTION ENGINE ──
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function floor(phase) {
+  const c = D.cfg;
+  if (phase === 'gk')   return c.floorGKon   ? c.floorGK   : 1;
+  if (phase === 'icon') return c.floorIconOn  ? c.floorIcon : 1;
+  return c.floorGenOn ? c.floorGen : 1;
+}
+
+function startAuction() {
+  if (D.capIds.length !== D.cfg.numTeams) return;
+  if (!confirm('Start auction?')) return;
+
+  // Build teams from captains
+  const teams = D.capIds.map((cid, i) => {
+    const cap = D.players.find(p => p.id === cid);
     return {
-      name:document.getElementById('tn-'+(i+1)).value.trim()||`Team ${i+1}`,
-      budget:S.budget,
-      players:[{name:cap.name,pos:cap.pos,type:cap.isGK?'gk-cap':'cap',price:0,isCap:true,isGK:cap.isGK,id:cap.id}],
-      hasGK:cap.isGK, capId
+      name: `Team ${i + 1}`,
+      budget: D.cfg.budget,
+      players: [{...cap, type: 'cap', price: 0, cap: true}],
+      hasGK: cap.gk
     };
   });
-  S.log=[];S.sold=0;S.skipped=0;S.phaseIdx=0;S.current=null;S.pendingAutoAssign=null;S.soldIds=new Set();
-  S.skippedPool=[];S.inReauction=false;S.inDistribute=false;
-  undoStack=[];
-  const gkCapCount=S.teams.filter(t=>t.hasGK).length;
-  S.phases=phaseOrder.filter(ph=>{
-    if(ph==='icon'&&iconIds.size===0)return false;
-    if(ph==='gk'&&gkCapCount===6)return false;
-    return true;
-  });
+
+  // Build phases
+  const sold = new Set(D.capIds);
+  const phases = [];
+  if (D.cfg.gkSeparate) {
+    const gkCapsCount = teams.filter(t => t.hasGK).length;
+    if (gkCapsCount < D.cfg.numTeams) phases.push('gk');
+  }
+  if (D.iconIds.length > 0) phases.push('icon');
+  phases.push('general');
+
+  D.auc = {
+    teams, phases, phaseIdx: 0,
+    queue: [], current: null,
+    sold: [], skipped: [],
+    undoStack: [],
+    soldIds: [...D.capIds],
+    inReauction: false, done: false,
+    simState: null  // for simultaneous icon mode
+  };
+
   loadQueue();
-  showScreen('screen-auction');
-  ['finish-panel','auto-panel','distribute-panel'].forEach(id=>document.getElementById(id).style.display='none');
-  document.getElementById('active-panel').style.display='block';
-  document.getElementById('skipped-info').style.display='none';
-  document.getElementById('undo-bar').classList.remove('visible');
-  document.getElementById('undo-hdr-btn').style.display='none';
-  updateTrack();renderStats();nextPlayer();
+  save();
+  goScreen('live');
 }
 
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
-function goSetup(){if(S.sold>0&&!confirm('Go back to setup? Progress will be lost.'))return;showScreen('screen-setup');}
-
-// ===== AUCTION CORE =====
-function loadQueue(){
-  const ph=S.phases[S.phaseIdx];
-  const exclude = id => capIds.has(id) || S.soldIds.has(id);
-  if(ph==='gk') S.queue=ALL_PLAYERS.filter(p=>p.isGK&&!exclude(p.id));
-  else if(ph==='icon') S.queue=ALL_PLAYERS.filter(p=>!p.isGK&&iconIds.has(p.id)&&!exclude(p.id));
-  else S.queue=ALL_PLAYERS.filter(p=>!p.isGK&&!iconIds.has(p.id)&&!exclude(p.id));
+function getSoldSet() {
+  return new Set(D.auc.soldIds);
 }
 
-function currentFloor(ph){
-  if(S.inReauction)return 1;
-  if(ph==='gk')return floors.gkOn?floors.gk:1;
-  if(ph==='icon')return floors.iconOn?floors.icon:1;
-  return floors.genOn?floors.gen:1;
-}
+function loadQueue() {
+  const A = D.auc;
+  const ph = A.phases[A.phaseIdx];
+  const sold = getSoldSet();
 
-function teamsNeedingGK(){return S.teams.filter(t=>!t.hasGK);}
-
-function updateTrack(){
-  const segs=S.phases.map((ph,i)=>{
-    const cur=!S.inReauction&&i===S.phaseIdx,done=i<S.phaseIdx&&!S.inReauction;
-    return `<div class="phase-seg ${cur?'active':''} ${done?'done':''}">${i+1}. ${PHASE_META[ph].label}</div>`;
-  });
-  if(S.inReauction) segs.push(`<div class="phase-seg reauction-seg">Re-auction</div>`);
-  else if(S.skippedPool.length>0) segs.push(`<div class="phase-seg">Re-auction</div>`);
-  document.getElementById('phase-track').innerHTML=segs.join('');
-  document.getElementById('s-phase').textContent=S.inReauction?'Re-auction':PHASE_META[S.phases[S.phaseIdx]]?.label||'—';
-}
-
-function renderStats(){
-  document.getElementById('s-queue').textContent=S.queue.length;
-  document.getElementById('s-sold').textContent=S.sold;
-  document.getElementById('s-skipped').textContent=S.skippedPool.length;
-  const si=document.getElementById('skipped-info');
-  if(S.skippedPool.length>0&&!S.inReauction){si.style.display='block';si.textContent=`${S.skippedPool.length} skipped player${S.skippedPool.length>1?'s':''} will be re-auctioned at the end.`;}
-  else si.style.display='none';
-}
-
-function nextPlayer(){
-  document.getElementById('next-phase-btn').style.display='none';
-  document.getElementById('bid-msg').className='msg';document.getElementById('bid-msg').textContent='';
-  document.getElementById('ob-panel').className='on-block-panel';
-  document.getElementById('ob-label').textContent='On the block';
-  document.getElementById('floor-notice').classList.remove('visible');
-  document.getElementById('auto-panel').style.display='none';
-  document.getElementById('active-panel').style.display='block';
-
-  if(!S.queue.length){
-    if(!S.inReauction&&S.phaseIdx<S.phases.length-1){offerNext();return;}
-    if(!S.inReauction){startReauction();return;}
-    startDistribute();return;
+  if (ph === 'gk') {
+    const q = D.players.filter(p => p.gk && !sold.has(p.id));
+    A.queue = D.cfg.shuffle ? shuffle(q) : [...q];
+  } else if (ph === 'icon') {
+    if (D.cfg.iconMode === 'sim') {
+      // Simultaneous mode — no queue, use simState
+      A.queue = [];
+      startSimultaneous();
+      return;
+    }
+    const q = D.players.filter(p => D.iconIds.includes(p.id) && !sold.has(p.id));
+    A.queue = D.cfg.shuffle ? shuffle(q) : [...q];
+  } else {
+    // General: exclude GKs (if separate) and icons
+    const iconSet = new Set(D.iconIds);
+    const q = D.players.filter(p => {
+      if (sold.has(p.id)) return false;
+      if (D.cfg.gkSeparate && p.gk) return false;
+      if (iconSet.has(p.id)) return false;
+      return true;
+    });
+    A.queue = D.cfg.shuffle ? shuffle(q) : [...q];
   }
 
-  const ph=S.phases[S.phaseIdx];
-  if(ph==='gk'&&!S.inReauction){
-    const needGK=teamsNeedingGK();
-    if(needGK.length===1&&S.queue.length===1){
-      S.current=S.queue.shift();
-      S.pendingAutoAssign={player:S.current,team:needGK[0]};
-      showAutoAssign();return;
+  nextPlayer();
+}
+
+function nextPlayer() {
+  const A = D.auc;
+
+  // Skip GKs if all teams already have GKs
+  if (A.phases[A.phaseIdx] === 'gk' && D.cfg.gkSeparate) {
+    while (A.queue.length && A.teams.every(t => t.hasGK)) {
+      A.skipped.push(A.queue.shift());
     }
   }
 
-  S.current=S.queue.shift();
-  document.getElementById('ob-name').textContent=S.current.name;
-  const lbl=S.inReauction?'Re-auction':ph==='gk'?'Goalkeeper':ph==='icon'?'Icon player':'General';
-  const bc=S.inReauction?'b-skip':ph==='gk'?'b-gk':ph==='icon'?'b-icon':'b-gen';
-  document.getElementById('ob-meta').innerHTML=`<span class="badge ${bc}">${lbl}</span><span>${S.current.pos}</span>`;
-  if(S.inReauction) document.getElementById('ob-panel').classList.add('danger-block');
-  const floor=currentFloor(ph);
-  const floorOn=!S.inReauction&&((ph==='gk'&&floors.gkOn)||(ph==='icon'&&floors.iconOn)||((ph==='general'||ph==='gen')&&floors.genOn));
-  if(floorOn&&floor>1){const fn=document.getElementById('floor-notice');fn.innerHTML=`Minimum bid: <span>${floor} coins</span>`;fn.classList.add('visible');}
-  document.getElementById('bid-coins').value=Math.max(1,currentFloor(ph));
-  renderTeamSel();renderQueueChips();renderStats();
-}
-
-function showAutoAssign(){
-  const {player,team}=S.pendingAutoAssign;
-  const price=floors.gkOn?floors.gk:1;
-  document.getElementById('auto-panel').style.display='block';
-  document.getElementById('active-panel').style.display='none';
-  document.getElementById('auto-text').innerHTML=`<strong>${player.name}</strong> (GK) is the last goalkeeper.<br><strong>${team.name}</strong> is the only team without a keeper.<br>Auto-assigning at the GK floor: <strong>${price} coin${price!==1?'s':''}.</strong>`;
-}
-
-function confirmAutoAssign(){
-  const {player,team}=S.pendingAutoAssign;
-  const price=Math.min(floors.gkOn?floors.gk:1,team.budget);
-  snapshot(`Auto-assign ${player.name} → ${team.name}`);
-  S.soldIds.add(player.id);
-  team.budget-=price;
-  team.players.push({name:player.name,pos:player.pos,type:'gk',price,isCap:false,isGK:true,id:player.id});
-  team.hasGK=true;
-  S.sold++;
-  S.log.unshift({player:player.name,team:team.name,price,type:'gk-auto'});
-  S.pendingAutoAssign=null;
-  document.getElementById('auto-panel').style.display='none';
-  nextPlayer();
-}
-
-function renderTeamSel(){
-  const ph=S.phases[S.phaseIdx];
-  document.getElementById('bid-team').innerHTML=S.teams.map((t,i)=>{
-    const gl=ph==='gk'&&t.hasGK&&!S.inReauction;
-    const full=t.players.length>=SQUAD_SIZE;
-    const dis=gl||full?'disabled':'';
-    const sfx=full?' (full)':gl?' (has GK)':`— ${t.budget} coins`;
-    return `<option value="${i}" ${dis}>${t.name} ${sfx}</option>`;
-  }).join('');
-}
-
-function confirmBid(){
-  const ti=parseInt(document.getElementById('bid-team').value);
-  const bid=parseInt(document.getElementById('bid-coins').value);
-  const t=S.teams[ti];const msg=document.getElementById('bid-msg');
-  const ph=S.phases[S.phaseIdx];const floor=currentFloor(ph);
-  if(isNaN(bid)||bid<1){msg.className='msg err';msg.textContent='Bid must be at least 1 coin.';return;}
-  if(!S.inReauction&&bid<floor){msg.className='msg err';msg.textContent=`Minimum bid is ${floor} coins.`;return;}
-  if(bid>t.budget){msg.className='msg err';msg.textContent=`${t.name} only has ${t.budget} coins.`;return;}
-  if(ph==='gk'&&t.hasGK&&!S.inReauction){msg.className='msg err';msg.textContent=`${t.name} already has a GK.`;return;}
-  if(t.players.length>=SQUAD_SIZE){msg.className='msg err';msg.textContent=`${t.name} squad is full.`;return;}
-  snapshot(`${S.current.name} → ${t.name} for ${bid}c`);
-  S.soldIds.add(S.current.id);
-  t.budget-=bid;
-  const type=S.inReauction?'reauction':ph==='gk'?'gk':ph==='icon'?'icon':'gen';
-  t.players.push({name:S.current.name,pos:S.current.pos,type,price:bid,id:S.current.id});
-  if(ph==='gk'&&!S.inReauction)t.hasGK=true;
-  S.sold++;
-  S.log.unshift({player:S.current.name,team:t.name,price:bid,type});
-  msg.className='msg ok';msg.textContent=`Sold to ${t.name}!`;
-  setTimeout(nextPlayer,500);
-}
-
-function skipPlayer(){
-  snapshot(`Skip ${S.current.name}`);
-  S.soldIds.add(S.current.id);
-  S.skippedPool.push(S.current);
-  S.log.unshift({player:S.current.name,team:null,type:'skip'});
-  nextPlayer();
-}
-
-function offerNext(){
-  const ni=S.phaseIdx+1;const nm=PHASE_META[S.phases[ni]];
-  document.getElementById('ob-name').textContent=`${PHASE_META[S.phases[S.phaseIdx]].label} phase done`;
-  document.getElementById('ob-meta').innerHTML=`<span style="color:var(--green);font-size:13px;">Ready for ${nm.label} phase.</span>`;
-  const btn=document.getElementById('next-phase-btn');
-  btn.textContent=`Start ${nm.label} →`;btn.style.display='inline-flex';btn.onclick=advancePhase;
-  renderStats();
-}
-
-function advancePhase(){S.phaseIdx++;loadQueue();updateTrack();nextPlayer();}
-
-function startReauction(){
-  if(!S.skippedPool.length){startDistribute();return;}
-  S.inReauction=true;
-  S.queue=[...S.skippedPool];S.skippedPool=[];
-  updateTrack();renderStats();
-  document.getElementById('ob-name').textContent='Re-auction';
-  document.getElementById('ob-meta').innerHTML=`<span style="color:var(--danger);font-size:13px;">${S.queue.length} skipped player${S.queue.length>1?'s':''} go back under the hammer. No floors apply.</span>`;
-  const btn=document.getElementById('next-phase-btn');
-  btn.textContent='Start re-auction →';btn.style.display='inline-flex';
-  btn.onclick=()=>{btn.style.display='none';btn.onclick=advancePhase;nextPlayer();};
-}
-
-function startDistribute(){
-  S.inReauction=false;
-  const unfilled=S.teams.filter(t=>t.players.length<SQUAD_SIZE);
-  if(!S.skippedPool.length||!unfilled.length){finishAuction();return;}
-  S.distQueue=[...S.skippedPool];S.skippedPool=[];
-  document.getElementById('active-panel').style.display='none';
-  document.getElementById('distribute-panel').style.display='block';
-  nextDistribute();
-}
-
-function nextDistribute(){
-  document.getElementById('dist-msg').textContent='';
-  if(!S.distQueue.length){finishAuction();return;}
-  const unfilled=S.teams.filter(t=>t.players.length<SQUAD_SIZE);
-  if(!unfilled.length){finishAuction();return;}
-  const p=S.distQueue[0];
-  document.getElementById('dist-name').textContent=p.name;
-  document.getElementById('dist-meta').innerHTML=`<span class="badge b-skip">Skipped</span><span>${p.pos}</span>`;
-  document.getElementById('dist-team').innerHTML=unfilled.map(t=>{const ri=S.teams.indexOf(t);return `<option value="${ri}">${t.name} (${SQUAD_SIZE-t.players.length} spot${SQUAD_SIZE-t.players.length>1?'s':''})</option>`;}).join('');
-  renderDistQueue();
-}
-
-function distributePlayer(){
-  const ti=parseInt(document.getElementById('dist-team').value);
-  const p=S.distQueue.shift();
-  snapshot(`Distribute ${p.name} → ${S.teams[ti].name}`);
-  S.teams[ti].players.push({name:p.name,pos:p.pos,type:'dist',price:0,id:p.id});
-  S.log.unshift({player:p.name,team:S.teams[ti].name,price:0,type:'dist'});
-  S.sold++;nextDistribute();
-}
-
-function skipDistribute(){
-  const p=S.distQueue.shift();
-  S.log.unshift({player:p.name,team:null,type:'skip-final'});
-  nextDistribute();
-}
-
-function finishAuction(){
-  ['active-panel','distribute-panel','auto-panel'].forEach(id=>document.getElementById(id).style.display='none');
-  document.getElementById('finish-panel').style.display='block';
-}
-
-function renderDistQueue(){
-  const el=document.getElementById('dist-queue-chips');
-  const rest=S.distQueue.slice(1);
-  el.innerHTML=rest.length?rest.map(p=>`<div class="chip">${p.name}<span class="chip-pos">${p.pos}</span></div>`).join(''):'<span style="font-size:13px;color:var(--muted);">None remaining</span>';
-}
-
-function renderQueueChips(){
-  const el=document.getElementById('queue-chips');
-  el.innerHTML=S.queue.length?S.queue.map(p=>`<div class="chip">${p.name}<span class="chip-pos">${p.pos}</span></div>`).join(''):'<span style="font-size:13px;color:var(--muted);">Queue empty</span>';
-}
-
-// ===== TABS =====
-function showTab(id,btn){
-  ['tab-live','tab-squads','tab-log'].forEach(t=>document.getElementById(t).style.display='none');
-  document.getElementById(id).style.display='block';
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  if(id==='tab-squads')renderSquads();
-  if(id==='tab-log')renderLog();
-}
-
-// ===== EDIT MODE =====
-let editBuffer = [];
-let editSnapshot = null;
-let editDragSrc = null;
-
-function enterEditMode(){
-  editMode=true; editBuffer=[]; editSnapshot=JSON.parse(JSON.stringify(S.teams));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab')[1].classList.add('active');
-  ['tab-live','tab-squads','tab-log'].forEach(t=>document.getElementById(t).style.display='none');
-  document.getElementById('tab-squads').style.display='block';
-  document.getElementById('edit-mode-banner').style.display='block';
-  document.getElementById('edit-save-warn').style.display='none';
-  renderEditBuffer(); renderSquads();
-}
-
-function cancelEdit(){
-  if(!confirm('Discard all changes?'))return;
-  S.teams=JSON.parse(JSON.stringify(editSnapshot));
-  editMode=false; editBuffer=[];
-  document.getElementById('edit-mode-banner').style.display='none';
-  renderSquads();
-}
-
-function saveEdit(){
-  const warn=document.getElementById('edit-save-warn');
-  const uneven=S.teams.filter(t=>t.players.length!==SQUAD_SIZE);
-  if(uneven.length){warn.style.display='block';warn.textContent=`Can't save — ${uneven.map(t=>`${t.name} has ${t.players.length}`).join(', ')} players.`;return;}
-  if(editBuffer.length){warn.style.display='block';warn.textContent=`${editBuffer.length} player${editBuffer.length>1?'s':''} still in buffer — assign them first.`;return;}
-  warn.style.display='none'; editMode=false; editBuffer=[];
-  document.getElementById('edit-mode-banner').style.display='none';
-  S.log.unshift({player:'—',team:'—',price:0,type:'edit-save'});
-  renderSquads();
-}
-
-function addNewPlayerToBuffer(){
-  const n=document.getElementById('new-player-name').value.trim();
-  const pos=document.getElementById('new-player-pos').value.trim()||'Unknown';
-  if(!n)return;
-  editBuffer.push({name:n,pos,type:'new',price:0,isCap:false,isGK:false});
-  document.getElementById('new-player-name').value='';
-  document.getElementById('new-player-pos').value='';
-  renderEditBuffer();
-}
-
-function removeFromTeam(ti,pi){
-  const p=S.teams[ti].players.splice(pi,1)[0];
-  S.teams[ti].hasGK=S.teams[ti].players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
-  editBuffer.push({...p}); renderEditBuffer(); renderSquads();
-}
-
-function assignFromBuffer(bi){
-  const p=editBuffer[bi];
-  document.getElementById('assign-modal-player').textContent=p.name+' · '+p.pos;
-  document.getElementById('assign-modal-err').textContent='';
-  document.getElementById('assign-modal-team').innerHTML=S.teams.map((t,i)=>
-    `<option value="${i}" ${t.players.length>=SQUAD_SIZE?'disabled':''}>${t.name} (${t.players.length}/${SQUAD_SIZE})${t.players.length>=SQUAD_SIZE?' — full':''}</option>`
-  ).join('');
-  document.getElementById('assign-modal-bg').dataset.bi=bi;
-  document.getElementById('assign-modal-bg').classList.add('open');
-}
-
-function confirmAssignFromBuffer(){
-  const bi=parseInt(document.getElementById('assign-modal-bg').dataset.bi);
-  const toIdx=parseInt(document.getElementById('assign-modal-team').value);
-  const toTeam=S.teams[toIdx]; const err=document.getElementById('assign-modal-err');
-  if(toTeam.players.length>=SQUAD_SIZE){err.textContent=`${toTeam.name} is full.`;return;}
-  const p=editBuffer.splice(bi,1)[0];
-  toTeam.players.push({...p});
-  toTeam.hasGK=toTeam.players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
-  document.getElementById('assign-modal-bg').classList.remove('open');
-  renderEditBuffer(); renderSquads();
-}
-
-function closeAssignModal(e){if(e.target===document.getElementById('assign-modal-bg'))document.getElementById('assign-modal-bg').classList.remove('open');}
-
-function bufferPlayerDragStart(e,bi){editDragSrc={source:'buffer',bi};e.dataTransfer.effectAllowed='move';e.currentTarget.classList.add('dragging-player');}
-function bufferPlayerDragEnd(e){e.currentTarget.classList.remove('dragging-player');}
-function bufferDragOver(e){e.preventDefault();document.getElementById('buffer-card').classList.add('drag-over-team');}
-function bufferDragLeave(){document.getElementById('buffer-card').classList.remove('drag-over-team');}
-function bufferDrop(e){
-  e.preventDefault();document.getElementById('buffer-card').classList.remove('drag-over-team');
-  if(editDragSrc&&editDragSrc.source==='team') removeFromTeam(editDragSrc.ti,editDragSrc.pi);
-  editDragSrc=null;
-}
-function teamPlayerDragStart(e,ti,pi){editDragSrc={source:'team',ti,pi};e.dataTransfer.effectAllowed='move';e.currentTarget.classList.add('dragging-player');}
-function teamPlayerDragEnd(e){e.currentTarget.classList.remove('dragging-player');}
-function teamCardDragOver(e,ti){e.preventDefault();document.getElementById('team-card-'+ti).classList.add('drag-over-team');}
-function teamCardDragLeave(ti){document.getElementById('team-card-'+ti).classList.remove('drag-over-team');}
-function teamCardDrop(e,toIdx){
-  e.preventDefault();document.getElementById('team-card-'+toIdx).classList.remove('drag-over-team');
-  if(!editDragSrc)return;
-  const toTeam=S.teams[toIdx];
-  if(toTeam.players.length>=SQUAD_SIZE){alert(`${toTeam.name} is full. Remove a player first.`);editDragSrc=null;return;}
-  if(editDragSrc.source==='buffer'){
-    const p=editBuffer.splice(editDragSrc.bi,1)[0];
-    toTeam.players.push({...p});toTeam.hasGK=toTeam.players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
-    renderEditBuffer();
-  } else if(editDragSrc.source==='team'){
-    if(editDragSrc.ti===toIdx){editDragSrc=null;return;}
-    const p=S.teams[editDragSrc.ti].players.splice(editDragSrc.pi,1)[0];
-    S.teams[editDragSrc.ti].hasGK=S.teams[editDragSrc.ti].players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
-    toTeam.players.push({...p});toTeam.hasGK=toTeam.players.some(p=>['gk','gk-cap','gk-auto'].includes(p.type)||p.isGK);
+  if (!A.queue.length) {
+    A.current = null;
+    renderLive();
+    return;
   }
-  editDragSrc=null; renderSquads();
+
+  // Auto-assign last GK if only one team needs it
+  if (A.phases[A.phaseIdx] === 'gk' && D.cfg.gkSeparate && A.queue.length === 1) {
+    const needGK = A.teams.filter(t => !t.hasGK);
+    if (needGK.length === 1) {
+      const p = A.queue.shift();
+      const t = needGK[0];
+      const price = Math.min(floor('gk'), t.budget);
+      doAssign(p, t, price, 'gk-auto');
+      return;
+    }
+  }
+
+  // Auto-assign last icon if only one team needs it (classic mode)
+  if (A.phases[A.phaseIdx] === 'icon' && D.cfg.iconMode === 'classic' && D.cfg.oneIconPerTeam && A.queue.length === 1) {
+    const needIcon = A.teams.filter(t => !t.players.some(p => p.type === 'icon'));
+    if (needIcon.length === 1) {
+      const p = A.queue.shift();
+      const t = needIcon[0];
+      const price = Math.min(floor('icon'), t.budget);
+      doAssign(p, t, price, 'icon-auto');
+      return;
+    }
+  }
+
+  A.current = A.queue.shift();
+  renderLive();
 }
 
-function renderEditBuffer(){
-  const el=document.getElementById('buffer-list');
-  if(!editBuffer.length){el.innerHTML='<div class="buffer-empty">No players in buffer. Remove a player from a team to add them here, or type a name below.</div>';return;}
-  el.innerHTML=editBuffer.map((p,i)=>`
-    <div class="buffer-player" draggable="true" ondragstart="bufferPlayerDragStart(event,${i})" ondragend="bufferPlayerDragEnd(event)">
-      <span style="display:flex;align-items:center;gap:8px;">
-        <span class="drag-handle">⋮⋮</span>${p.name}
-        <span class="chip-pos">${p.pos}</span>
-        ${p.type==='new'?'<span class="badge" style="background:var(--gold-dim);color:var(--gold);">New</span>':''}
-      </span>
-      <span style="display:flex;gap:6px;">
-        <button class="edit-move-btn" onclick="assignFromBuffer(${i})">Assign</button>
-        <button class="edit-move-btn" style="color:var(--danger);border-color:rgba(255,90,90,.3);" onclick="editBuffer.splice(${i},1);renderEditBuffer();">✕</button>
-      </span>
-    </div>`).join('');
+function doAssign(player, team, price, type) {
+  const A = D.auc;
+  team.budget -= price;
+  if (price < 0) team.budget -= price; // guard
+  team.players.push({...player, type, price, cap: false});
+  if (player.gk && (type === 'gk' || type === 'gk-auto')) team.hasGK = true;
+  A.soldIds.push(player.id);
+  A.sold.push({player: player.n, team: team.name, price, type});
+  A.current = null;
+  save();
+  nextPlayer();
 }
 
-function renderSquads(){
-  document.getElementById('squads-grid').innerHTML=S.teams.map((t,ti)=>{
-    const full=t.players.length>=SQUAD_SIZE;
-    return `<div class="team-card ${full&&!editMode?'team-full':''} ${editMode&&full?'team-full':''}" id="team-card-${ti}"
-      ${editMode?`ondragover="teamCardDragOver(event,${ti})" ondragleave="teamCardDragLeave(${ti})" ondrop="teamCardDrop(event,${ti})"`:''}>
-      <div class="team-header">
-        <div><div class="team-name-disp">${t.name}</div><div style="font-size:12px;color:var(--muted);">${t.players.length}/${SQUAD_SIZE} players</div></div>
-        <div style="text-align:right;"><div class="team-coins">${t.budget}</div><div class="team-coins-lbl">coins left</div></div>
+function takeSnap(desc) {
+  const A = D.auc;
+  A.undoStack.push({
+    desc,
+    teams: JSON.parse(JSON.stringify(A.teams)),
+    queue: [...A.queue],
+    current: A.current ? {...A.current} : null,
+    phaseIdx: A.phaseIdx,
+    soldIds: [...A.soldIds],
+    sold: [...A.sold],
+    skipped: [...A.skipped],
+    inReauction: A.inReauction
+  });
+  if (A.undoStack.length > 30) A.undoStack.shift();
+}
+
+function doBid() {
+  if (!isAdmin()) return;
+  const A = D.auc;
+  if (!A.current) return;
+
+  const tSel = document.getElementById('bid-team');
+  const cInp = document.getElementById('bid-coins');
+  const msg  = document.getElementById('bid-msg');
+
+  const tIdx = parseInt(tSel.value);
+  const coins = parseInt(cInp.value);
+  const t = A.teams[tIdx];
+  const ph = A.phases[A.phaseIdx];
+
+  msg.textContent = '';
+
+  if (isNaN(tIdx) || !t)             { msg.textContent = 'Select a team'; return; }
+  if (isNaN(coins) || coins < 1)     { msg.textContent = 'Enter bid amount'; return; }
+  const fl = floor(ph);
+  if (!A.inReauction && coins < fl)  { msg.textContent = `Min bid: ${fl} coins`; return; }
+  if (coins > t.budget)              { msg.textContent = `${t.name} only has ${t.budget} coins`; return; }
+  if (ph === 'gk' && t.hasGK && !A.inReauction) { msg.textContent = `${t.name} already has a GK`; return; }
+  if (ph === 'icon' && D.cfg.oneIconPerTeam && t.players.some(p => p.type === 'icon') && !A.inReauction) {
+    msg.textContent = `${t.name} already has an icon`; return;
+  }
+  if (t.players.length >= D.cfg.squadSize) { msg.textContent = `${t.name} squad is full`; return; }
+
+  takeSnap(`${A.current.n} → ${t.name} ${coins}c`);
+  const type = A.inReauction ? 'reauction' : ph;
+  doAssign(A.current, t, coins, type);
+  cInp.value = fl;
+}
+
+function doSkip() {
+  if (!isAdmin() || !D.auc.current) return;
+  takeSnap(`Skip ${D.auc.current.n}`);
+  D.auc.skipped.push(D.auc.current);
+  D.auc.sold.push({player: D.auc.current.n, team: null, price: 0, type: 'skip'});
+  D.auc.current = null;
+  save();
+  nextPlayer();
+}
+
+function doUndo() {
+  if (!isAdmin()) return;
+  const A = D.auc;
+  if (!A.undoStack.length) return;
+  const snap = A.undoStack.pop();
+  A.teams    = snap.teams;
+  A.queue    = snap.queue;
+  A.current  = snap.current;
+  A.phaseIdx = snap.phaseIdx;
+  A.soldIds  = snap.soldIds;
+  A.sold     = snap.sold;
+  A.skipped  = snap.skipped;
+  A.inReauction = snap.inReauction;
+  A.simState = null;
+  save();
+  renderLive();
+}
+
+function advancePhase() {
+  if (!isAdmin()) return;
+  const A = D.auc;
+  A.phaseIdx++;
+  A.current = null;
+  A.queue = [];
+  A.simState = null;
+  save();
+  loadQueue();
+}
+
+function startReauction() {
+  const A = D.auc;
+  if (!A.skipped.length) { endAuction(); return; }
+  A.inReauction = true;
+  A.queue = [...A.skipped];
+  A.skipped = [];
+  A.current = null;
+  save();
+  nextPlayer();
+}
+
+function endAuction() {
+  D.auc.done = true;
+  D.auc.current = null;
+  D.auc.queue = [];
+  save();
+  renderLive();
+}
+
+// ── SIMULTANEOUS ICON MODE ──
+function startSimultaneous() {
+  const A = D.auc;
+  const sold = getSoldSet();
+  const pool = D.players.filter(p => D.iconIds.includes(p.id) && !sold.has(p.id));
+  const needIcon = A.teams.filter(t => !t.players.some(p => p.type === 'icon' || p.type === 'icon-auto'));
+
+  if (!pool.length || !needIcon.length) {
+    // Nothing to do, move on
+    A.simState = null;
+    A.queue = [];
+    A.current = null;
+    renderLive();
+    return;
+  }
+
+  A.simState = {
+    pool,          // available icons
+    teams: needIcon, // teams that need an icon
+    picks: {},     // {teamName: {playerId, bid}} — filled by admin
+    phase: 'pick'  // 'pick' | 'resolve'
+  };
+  A.current = null;
+  A.queue = [];
+  save();
+  renderLive();
+}
+
+function simReveal() {
+  if (!isAdmin()) return;
+  const A = D.auc;
+  const sim = A.simState;
+  if (!sim) return;
+
+  // Read picks from DOM
+  const picks = {};
+  const fl = floor('icon');
+  for (let i = 0; i < sim.teams.length; i++) {
+    const t = sim.teams[i];
+    const pEl = document.getElementById('sp-' + i);
+    const bEl = document.getElementById('sb-' + i);
+    const pId = parseInt(pEl ? pEl.value : '');
+    const bid  = parseInt(bEl ? bEl.value : '');
+
+    if (!pEl || !pEl.value) { simErr(`${t.name} must pick an icon`); return; }
+    if (isNaN(bid) || bid < fl) { simErr(`${t.name}: minimum bid is ${fl}`); return; }
+    if (bid > t.budget) { simErr(`${t.name} only has ${t.budget} coins`); return; }
+    picks[t.name] = {playerId: pId, bid};
+  }
+
+  // Group picks by player
+  const byPlayer = {};
+  for (const [teamName, pk] of Object.entries(picks)) {
+    const key = pk.playerId;
+    if (!byPlayer[key]) byPlayer[key] = [];
+    byPlayer[key].push({teamName, bid: pk.bid});
+  }
+
+  // Award uncontested, collect conflicts
+  const conflicts = [];
+  for (const [pIdStr, bids] of Object.entries(byPlayer)) {
+    const pId = parseInt(pIdStr);
+    const player = sim.pool.find(p => p.id === pId);
+    if (!player) continue;
+
+    if (bids.length === 1) {
+      // Uncontested — assign immediately
+      const {teamName, bid} = bids[0];
+      const t = A.teams.find(t => t.name === teamName);
+      takeSnap(`${player.n} → ${t.name} ${bid}c (sim)`);
+      t.budget -= bid;
+      t.players.push({...player, type: 'icon', price: bid, cap: false});
+      A.soldIds.push(player.id);
+      A.sold.push({player: player.n, team: t.name, price: bid, type: 'icon-sim'});
+    } else {
+      conflicts.push({player, bids});
+    }
+  }
+
+  if (conflicts.length) {
+    sim.phase = 'resolve';
+    sim.conflicts = conflicts;
+    sim.conflictIdx = 0;
+    save();
+    renderLive();
+  } else {
+    // All done — continue to next phase
+    A.simState = null;
+    save();
+    afterSimComplete();
+  }
+}
+
+function simConflictBid() {
+  if (!isAdmin()) return;
+  const A = D.auc;
+  const sim = A.simState;
+  if (!sim || sim.phase !== 'resolve') return;
+
+  const conf = sim.conflicts[sim.conflictIdx];
+  const tSel  = document.getElementById('war-team');
+  const cInp  = document.getElementById('war-coins');
+
+  const tIdx = parseInt(tSel.value);
+  const coins = parseInt(cInp.value);
+  const t = A.teams[tIdx];
+
+  if (!t || !conf.bids.some(b => b.teamName === t.name)) {
+    document.getElementById('war-msg').textContent = 'Only conflicting teams can bid'; return;
+  }
+  if (isNaN(coins) || coins < 1) { document.getElementById('war-msg').textContent = 'Enter bid'; return; }
+  if (coins > t.budget) { document.getElementById('war-msg').textContent = `Only ${t.budget}c available`; return; }
+
+  takeSnap(`${conf.player.n} → ${t.name} ${coins}c (war)`);
+  t.budget -= coins;
+  t.players.push({...conf.player, type: 'icon', price: coins, cap: false});
+  A.soldIds.push(conf.player.id);
+  A.sold.push({player: conf.player.n, team: t.name, price: coins, type: 'icon-war'});
+
+  sim.conflictIdx++;
+  if (sim.conflictIdx >= sim.conflicts.length) {
+    A.simState = null;
+    save();
+    afterSimComplete();
+  } else {
+    save();
+    renderLive();
+  }
+}
+
+function afterSimComplete() {
+  // Check if any teams still need icons and pool still has icons
+  const A = D.auc;
+  const sold = getSoldSet();
+  const pool = D.players.filter(p => D.iconIds.includes(p.id) && !sold.has(p.id));
+  const needIcon = A.teams.filter(t => !t.players.some(p => p.type === 'icon' || p.type === 'icon-auto'));
+
+  if (pool.length && needIcon.length) {
+    // Another round of simultaneous
+    startSimultaneous();
+  } else {
+    // Move to next phase
+    A.current = null;
+    A.queue = [];
+    renderLive();
+  }
+}
+
+function simErr(msg) {
+  const el = document.getElementById('sim-err');
+  if (el) el.textContent = msg;
+}
+
+// ── RENDER LIVE ──
+function renderLive() {
+  const el = document.getElementById('live-wrap');
+  if (!el) return;
+
+  if (!D.auc) {
+    el.innerHTML = `<div class="empty">No auction started. Go to <strong>Setup</strong> to begin.</div>`;
+    return;
+  }
+
+  const A = D.auc;
+
+  // DONE
+  if (A.done) {
+    el.innerHTML = `
+      <div class="card" style="text-align:center;padding:32px">
+        <div style="font-size:44px;margin-bottom:10px">🏆</div>
+        <div class="bebas" style="font-size:30px;color:var(--green);margin-bottom:8px">Auction Complete</div>
+        <p style="color:var(--muted);margin-bottom:18px">${A.teams.reduce((s,t)=>s+t.players.length,0)} players across ${A.teams.length} teams</p>
+        <div class="brow" style="justify-content:center">
+          <button class="btn g" onclick="goScreen('squads')">View Squads</button>
+          <button class="btn s aonly" onclick="exportJSON()">📤 Export JSON</button>
+          <button class="btn s aonly" onclick="exportCSV()">📊 Export CSV</button>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const ph = A.phases[A.phaseIdx];
+  const phLabel = ph === 'gk' ? 'GK Phase' : ph === 'icon' ? 'Icon Phase' : 'General Phase';
+
+  // Phase bar
+  let html = `<div class="card" style="padding:12px 14px;margin-bottom:10px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+      <div class="bebas" style="font-size:19px">${A.inReauction ? 'Re-auction' : phLabel}</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        ${isAdmin() && A.undoStack.length ? `<button class="btn s xs" onclick="doUndo()">↩ Undo</button>` : ''}
+        <span style="font-size:11px;color:var(--muted)">${A.sold.filter(s=>s.type!=='skip').length} sold · ${A.queue.length} remain</span>
       </div>
-      ${t.players.map((p,pi)=>{
-        const typeKey=['gk','gk-cap','gk-auto'].includes(p.type)?'gk':p.type==='icon'?'icon':p.type==='cap'?'cap':'gen';
-        const typeLabel=p.type==='gk'||p.type==='gk-auto'?'GK':p.type==='gk-cap'?'GK+C':p.type==='icon'?'Icon':p.type==='cap'?'Cap':'Gen';
-        return `<div class="player-row ${editMode?'draggable':''}"
-          ${editMode?`draggable="true" ondragstart="teamPlayerDragStart(event,${ti},${pi})" ondragend="teamPlayerDragEnd(event)"`:''}>
-          <span style="display:flex;align-items:center;gap:5px;">
-            ${editMode?'<span class="drag-handle">⋮⋮</span>':''}
-            ${p.isCap?'<span class="badge b-cap" style="font-size:9px;">C</span>':''}${p.name}
-          </span>
-          <span style="display:flex;gap:5px;align-items:center;">
-            <span style="font-size:11px;color:var(--muted);">${p.price>0?p.price+'c':'free'}</span>
-            <span class="badge b-${typeKey}">${typeLabel}</span>
-            ${editMode?`<button class="edit-move-btn" style="color:var(--danger);border-color:rgba(255,90,90,.3);" onclick="removeFromTeam(${ti},${pi})">Remove</button>`:''}
-          </span>
+    </div>
+    <div class="phase-bar">
+      ${A.phases.map((p,i) => `<span class="pseg ${i<A.phaseIdx?'done':i===A.phaseIdx?'on':''}">${p==='gk'?'🧤 GKs':p==='icon'?'⭐ Icons':'⚽ General'}</span>`).join('')}
+    </div>
+  </div>`;
+
+  // ── SIMULTANEOUS MODE ──
+  if (A.simState) {
+    const sim = A.simState;
+
+    if (sim.phase === 'pick') {
+      html += `<div class="card">
+        <div class="ct" style="color:var(--gold)">⚡ Simultaneous Icon Pick</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+          Each team secretly picks an icon player and a bid. All picks are revealed at once.
+          If two teams pick the same player, they go to an open bidding war.
+        </p>
+        <div style="margin-bottom:10px">
+          <strong style="font-size:12px">Available icons:</strong><br>
+          <div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:5px">
+            ${sim.pool.map(p => `<span class="badge bicon" style="font-size:11px;padding:3px 8px">${p.n} <span style="color:var(--muted)">${p.p}</span></span>`).join('')}
+          </div>
+        </div>
+        <div class="sim-grid">
+          ${sim.teams.map((t, i) => `<div class="sim-card">
+            <div class="sim-tname">${t.name} <span style="font-weight:400;color:var(--muted);font-size:11px">${t.budget}c</span></div>
+            <select id="sp-${i}" style="width:100%;margin-bottom:6px">
+              <option value="">— pick icon —</option>
+              ${sim.pool.map(p => `<option value="${p.id}">${p.n}</option>`).join('')}
+            </select>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="number" id="sb-${i}" min="${floor('icon')}" max="${t.budget}" value="${floor('icon')}" style="width:75px">
+              <span style="font-size:11px;color:var(--muted)">coins</span>
+            </div>
+          </div>`).join('')}
+        </div>
+        <div class="err" id="sim-err"></div>
+        <div class="brow">
+          <button class="btn go" onclick="simReveal()">🎭 Reveal all picks</button>
+          ${A.undoStack.length ? `<button class="btn s sm" onclick="doUndo()">↩ Undo</button>` : ''}
+        </div>
+      </div>`;
+      el.innerHTML = html; return;
+    }
+
+    if (sim.phase === 'resolve') {
+      const conf = sim.conflicts[sim.conflictIdx];
+      const conflictTeams = A.teams.filter(t => conf.bids.some(b => b.teamName === t.name));
+      html += `<div class="ob ob-warn">
+        <div class="ob-lbl">⚔️ Bidding War — ${conf.player.n}</div>
+        <div class="ob-name">${conf.player.n}</div>
+        <div class="ob-meta"><span>${conf.player.p}</span><span>Both teams picked this player</span></div>
+      </div>
+      <div class="card aonly">
+        <div class="ct" style="margin-bottom:6px">Conflict ${sim.conflictIdx+1}/${sim.conflicts.length}: ${conf.bids.map(b=>b.teamName+' ('+b.bid+'c)').join(' vs ')}</div>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:10px">Open bidding — highest bid wins</p>
+        <div class="frow">
+          <span class="fl">Team</span>
+          <select id="war-team" style="flex:1">
+            ${conflictTeams.map((t,i) => `<option value="${A.teams.indexOf(t)}">${t.name} — ${t.budget}c</option>`).join('')}
+          </select>
+        </div>
+        <div class="frow">
+          <span class="fl">Bid</span>
+          <input type="number" id="war-coins" min="1" value="${Math.max(...conf.bids.map(b=>b.bid))+1}" style="width:90px">
+          <span class="hint">coins</span>
+        </div>
+        <div class="err" id="war-msg"></div>
+        <div class="brow">
+          <button class="btn g sm" onclick="simConflictBid()">Award to this team</button>
+        </div>
+      </div>`;
+      el.innerHTML = html; return;
+    }
+  }
+
+  // ── PHASE BOUNDARY (no current player, queue empty) ──
+  if (!A.current) {
+    if (!A.inReauction && A.phaseIdx < A.phases.length - 1) {
+      const nextPh = A.phases[A.phaseIdx + 1];
+      const nextLabel = nextPh === 'gk' ? 'GK Phase' : nextPh === 'icon' ? 'Icon Phase' : 'General Phase';
+      html += `<div class="ob">
+        <div class="ob-lbl">Phase Complete</div>
+        <div class="ob-name" style="font-size:26px">${phLabel} Done</div>
+        ${A.skipped.length ? `<div style="font-size:12px;color:var(--muted);margin-top:6px">${A.skipped.length} player(s) skipped — will be re-auctioned at the end</div>` : ''}
+      </div>
+      <div class="card aonly" style="text-align:center">
+        <button class="btn g" onclick="advancePhase()">Start ${nextLabel} →</button>
+      </div>`;
+    } else if (!A.inReauction) {
+      // All phases done — check for skipped
+      if (A.skipped.length) {
+        html += `<div class="ob">
+          <div class="ob-lbl">All Phases Complete</div>
+          <div class="ob-name" style="font-size:26px">${A.skipped.length} Player${A.skipped.length>1?'s':''} to Re-auction</div>
+        </div>
+        <div class="card aonly" style="text-align:center">
+          <button class="btn g" onclick="startReauction()">Start Re-auction →</button>
+        </div>`;
+      } else {
+        html += `<div class="card aonly" style="text-align:center">
+          <button class="btn g" onclick="endAuction()">✓ Finish Auction</button>
+        </div>`;
+      }
+    } else {
+      // Re-auction done
+      html += `<div class="card aonly" style="text-align:center">
+        <button class="btn g" onclick="endAuction()">✓ Finish Auction</button>
+      </div>`;
+    }
+
+    // Show current squads summary
+    html += renderSquadMini();
+    el.innerHTML = html;
+    return;
+  }
+
+  // ── CURRENT PLAYER ──
+  const isIcon = D.iconIds.includes(A.current.id);
+  const isCap  = D.capIds.includes(A.current.id);
+  html += `<div class="ob">
+    <div class="ob-lbl">${A.inReauction ? 'Re-auction' : phLabel}</div>
+    <div class="ob-name">${A.current.n}</div>
+    <div class="ob-meta">
+      <span>${A.current.p}</span>
+      ${A.current.gk ? '<span class="badge bgk">GK</span>' : ''}
+      ${isIcon ? '<span class="badge bicon">Icon</span>' : ''}
+      ${A.skipped.length ? `<span style="color:var(--muted)">${A.skipped.length} skipped</span>` : ''}
+    </div>
+  </div>`;
+
+  // Bid panel (admin only)
+  if (isAdmin()) {
+    const fl = floor(ph);
+    html += `<div class="card aonly">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:8px">
+        ${fl > 1 ? `Minimum bid: <strong>${fl} coins</strong> · ` : ''}Assign to team:
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select id="bid-team" style="flex:2;min-width:140px">
+          ${A.teams.map((t, i) => {
+            const gkLocked   = ph === 'gk' && t.hasGK && !A.inReauction;
+            const iconLocked  = ph === 'icon' && D.cfg.oneIconPerTeam && t.players.some(p=>p.type==='icon') && !A.inReauction;
+            const full        = t.players.length >= D.cfg.squadSize;
+            const dis = gkLocked || iconLocked || full;
+            const note = full ? ' (full)' : gkLocked ? ' (has GK)' : iconLocked ? ' (has icon)' : ` — ${t.budget}c`;
+            return `<option value="${i}" ${dis?'disabled':''}>${t.name}${note}</option>`;
+          }).join('')}
+        </select>
+        <input type="number" id="bid-coins" min="${fl}" value="${fl}" style="width:85px;text-align:center">
+        <button class="btn g sm" onclick="doBid()">Sell</button>
+        <button class="btn s sm" onclick="doSkip()">Skip</button>
+      </div>
+      <div class="err" id="bid-msg"></div>
+    </div>`;
+  }
+
+  // Queue preview
+  if (A.queue.length) {
+    html += `<div style="font-size:11px;color:var(--muted);margin-top:8px">
+      Next: ${A.queue.slice(0,5).map(p=>p.n).join(', ')}${A.queue.length>5?' +'+(A.queue.length-5)+' more':''}
+    </div>`;
+  }
+
+  el.innerHTML = html;
+}
+
+function renderSquadMini() {
+  const A = D.auc;
+  return `<div class="card" style="margin-top:10px">
+    <div class="ct">Squads</div>
+    <div class="sq-grid">
+      ${A.teams.map(t => `<div class="sq-card">
+        <div class="sq-hdr"><span class="sq-name">${t.name}</span><span class="sq-budget">${t.budget}c left</span></div>
+        ${t.players.map(p => `<div class="sq-row">
+          ${p.cap?'<span class="badge bcap">C</span>':''}
+          <span class="sq-player">${p.n}</span>
+          <span class="sq-pos">${p.p}</span>
+        </div>`).join('')}
+        ${t.players.length<D.cfg.squadSize?`<div style="padding:4px 13px;font-size:11px;color:var(--red)">${D.cfg.squadSize-t.players.length} spot(s) left</div>`:''}
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── SQUADS SCREEN ──
+function renderSquads() {
+  const el = document.getElementById('squads-wrap');
+  if (!D.auc) { el.innerHTML = `<div class="empty">No auction data</div>`; return; }
+  const A = D.auc;
+  const sp = D.cfg.showPrices && isAdmin();
+
+  let html = '';
+  if (A.done && isAdmin()) {
+    html += `<div class="green-banner">
+      <div><strong>Auction complete</strong><br><span style="font-size:12px;color:var(--muted)">Export squads to use in the Tournament app</span></div>
+      <div class="brow">
+        <button class="btn g sm" onclick="exportJSON()">📤 Export JSON</button>
+        <button class="btn s sm" onclick="exportCSV()">📊 Export CSV</button>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:10px">
+      <label style="font-size:12px;display:flex;align-items:center;gap:5px;cursor:pointer">
+        <input type="checkbox" ${sp?'checked':''} onchange="D.cfg.showPrices=this.checked;save();renderSquads()"> Show prices
+      </label>
+    </div>`;
+  }
+
+  html += `<div class="sq-grid">`;
+  A.teams.forEach((t, ti) => {
+    const ordered = [
+      ...t.players.filter(p => p.cap),
+      ...t.players.filter(p => !p.cap && p.gk),
+      ...t.players.filter(p => !p.cap && !p.gk)
+    ];
+    html += `<div class="sq-card">
+      <div class="sq-hdr">
+        <div>
+          <div class="sq-name">${t.name}</div>
+          <div style="font-size:10px;color:var(--muted)">${t.players.length}/${D.cfg.squadSize} players${sp?` · ${t.budget}c left`:''}</div>
+        </div>
+        ${isAdmin() ? `<button class="btn s xs" onclick="openRename(${ti})">✏️</button>` : ''}
+      </div>
+      ${ordered.map(p => {
+        const isGK = p.gk;
+        const badgeType = isGK ? 'bgk' : p.type === 'icon' ? 'bicon' : p.cap ? 'bcap' : '';
+        const badgeLbl  = isGK ? 'GK' : p.type === 'icon' ? 'Icon' : p.cap ? 'Cap' : '';
+        return `<div class="sq-row">
+          ${p.cap ? '<span class="badge bcap">C</span>' : ''}
+          <span class="sq-player">${p.n}</span>
+          <span class="sq-pos">${p.p}</span>
+          ${badgeLbl ? `<span class="badge ${badgeType}">${badgeLbl}</span>` : ''}
+          ${sp && p.price ? `<span class="sq-price">${p.price}c</span>` : ''}
         </div>`;
       }).join('')}
-      ${t.players.length<SQUAD_SIZE?`<div class="unfilled">${SQUAD_SIZE-t.players.length} spot(s) unfilled</div>`:''}
-      ${editMode?`<div style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center;border-top:1px dashed var(--border);padding-top:6px;">← drag from buffer here</div>`:''}
+      ${t.players.length < D.cfg.squadSize ? `<div style="padding:5px 13px;font-size:11px;color:var(--red)">${D.cfg.squadSize-t.players.length} spot(s) unfilled</div>` : ''}
     </div>`;
-  }).join('');
+  });
+  html += `</div>`;
+  el.innerHTML = html;
 }
 
-function renderLog(){
-  const el=document.getElementById('full-log');
-  if(!S.log.length){el.innerHTML='<div class="log-entry" style="color:var(--muted);">No sales yet.</div>';return;}
-  el.innerHTML=S.log.map(e=>{
-    if(e.type==='skip'||e.type==='skip-final') return `<div class="log-entry"><span class="le-name">${e.player}</span><span class="badge b-skip">skipped</span></div>`;
-    if(e.type==='dist') return `<div class="log-entry"><span class="le-name">${e.player}</span><span><span class="le-team">${e.team}</span>&nbsp;<span class="badge b-skip">free</span></span></div>`;
-    if(e.type==='gk-auto') return `<div class="log-entry"><span class="le-name">${e.player}</span><span><span class="le-team">${e.team}</span>&nbsp;${e.price}c&nbsp;<span class="badge b-auto">Auto</span></span></div>`;
-    if(e.type==='edit-move') return `<div class="log-entry"><span class="le-name">${e.player}</span><span><span class="le-team">${e.team}</span>&nbsp;<span class="badge" style="background:var(--gold-dim);color:var(--gold);">Moved</span></span></div>`;
-    if(e.type==='edit-save') return `<div class="log-entry"><span style="color:var(--gold);">Squads manually edited &amp; saved</span></div>`;
-    const bc=e.type==='gk'?'b-gk':e.type==='icon'?'b-icon':e.type==='cap'?'b-cap':e.type==='reauction'?'b-skip':'b-gen';
-    const bl=e.type==='gk'?'GK':e.type==='icon'?'Icon':e.type==='cap'?'Cap':e.type==='reauction'?'Re-auc':'Gen';
-    return `<div class="log-entry"><span class="le-name">${e.player}</span><span><span class="le-team">${e.team}</span>&nbsp;${e.price}c&nbsp;<span class="badge ${bc}">${bl}</span></span></div>`;
-  }).join('');
+let renameIdx = -1;
+function openRename(ti) {
+  renameIdx = ti;
+  document.getElementById('rename-inp').value = D.auc.teams[ti].name;
+  document.getElementById('rename-err').textContent = '';
+  document.getElementById('m-rename').classList.add('open');
+}
+function doRename() {
+  const v = document.getElementById('rename-inp').value.trim();
+  if (!v) { document.getElementById('rename-err').textContent = 'Name required'; return; }
+  D.auc.teams[renameIdx].name = v;
+  document.getElementById('m-rename').classList.remove('open');
+  save(); renderSquads();
 }
 
-initSetup();
+// ── LOG ──
+function renderLog() {
+  const el = document.getElementById('log-wrap');
+  if (!D.auc || !D.auc.sold.length) { el.innerHTML = `<div class="empty">No entries yet</div>`; return; }
+  el.innerHTML = `<div class="card">
+    <div class="ct">Auction Log</div>
+    ${[...D.auc.sold].reverse().map(e => `<div class="log-row">
+      <span style="flex:1;font-weight:500">${e.player}</span>
+      <span style="color:var(--muted)">${e.team || '—'}</span>
+      <span style="color:var(--gold)">${e.price ? e.price+'c' : '—'}</span>
+      <span style="font-size:10px;background:var(--bg3);padding:1px 6px;border-radius:4px;color:var(--muted)">${e.type}</span>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ── SETTINGS ──
+function renderSettings() {
+  const el = document.getElementById('settings-wrap');
+  el.innerHTML = `
+    <div class="card">
+      <div class="ct">PIN Settings</div>
+      <div class="frow"><span class="fl">Admin PIN</span><input type="password" id="s-ap" maxlength="6" placeholder="new PIN (4-6 digits)" style="width:160px"></div>
+      <div class="frow"><span class="fl">Viewer PIN</span><input type="password" id="s-vp" maxlength="6" placeholder="leave blank to disable" style="width:160px"></div>
+      <div class="err" id="s-err"></div>
+      <div class="brow"><button class="btn g sm" onclick="savePins()">Save PINs</button></div>
+    </div>
+    <div class="card">
+      <div class="ct" style="color:var(--red)">Danger</div>
+      <button class="btn d sm" onclick="if(confirm('Delete ALL auction data? Cannot be undone.')){localStorage.removeItem(KEY);location.reload()}">🗑 Delete all data</button>
+    </div>`;
+}
+function savePins() {
+  const a = document.getElementById('s-ap').value.trim();
+  const v = document.getElementById('s-vp').value.trim();
+  const err = document.getElementById('s-err');
+  if (a && !/^\d{4,6}$/.test(a)) { err.textContent='Admin PIN must be 4–6 digits'; return; }
+  if (v && !/^\d{4,6}$/.test(v)) { err.textContent='Viewer PIN must be 4–6 digits'; return; }
+  if (a) D.cfg.adminPin = a;
+  D.cfg.viewerPin = v;
+  err.textContent = '';
+  save();
+  err.style.color = 'var(--green)';
+  err.textContent = '✓ Saved';
+  setTimeout(() => { err.textContent=''; err.style.color='var(--red)'; }, 2000);
+}
+
+// ── EXPORT ──
+function exportJSON() {
+  const squads = D.auc.teams.map(t => ({
+    name: t.name,
+    players: t.players.map(p => ({
+      name: p.n, pos: p.p, isGK: p.gk, isCap: !!p.cap,
+      type: p.type, price: p.price || 0
+    }))
+  }));
+  dl(JSON.stringify({tournName: D.cfg.tournName, squads, exportedAt: Date.now()}, null, 2),
+    clean(D.cfg.tournName) + '_squads.json', 'application/json');
+}
+function exportCSV() {
+  const sp = D.cfg.showPrices;
+  const rows = [['Team','Player','Position','Role',...(sp?['Price']:[])]];
+  D.auc.teams.forEach(t => {
+    const ord = [...t.players.filter(p=>p.cap),...t.players.filter(p=>!p.cap&&p.gk),...t.players.filter(p=>!p.cap&&!p.gk)];
+    ord.forEach(p => {
+      const role = p.gk?'GK':p.type==='icon'?'Icon':p.cap?'Captain':'Player';
+      rows.push([t.name, p.n, p.p, role, ...(sp?[p.price||0]:[])]);
+    });
+    rows.push(['','','','',...(sp?['']:[])]);
+  });
+  dl('\uFEFF'+rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n'),
+    clean(D.cfg.tournName)+'_squads.csv','text/csv');
+}
+function dl(content, name, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([content],{type}));
+  a.download = name; a.click();
+}
+function clean(s) { return (s||'PSA').replace(/\s+/g,'_'); }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  load();
+  document.getElementById('pinp').focus();
+});
 </script>
 </body>
 </html>
